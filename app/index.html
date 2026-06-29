@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2315233B'/><rect x='15' y='6' width='2' height='11' fill='%23F4A300'/><path d='M16 25 L11.5 16 L20.5 16 Z' fill='%23F4A300'/></svg>">
 <title>Crédito Distun — Demo del producto</title>
 <meta name="description" content="Demo guiada y clickeable: crédito incrustado en el flujo de Distun, con underwriting explicable sobre el historial de compras.">
 <style>
@@ -253,11 +254,11 @@
 
       <!-- 2 CUSTOMER -->
       <div class="scr" data-screen="customer">
-        <div class="ah"><div class="back" onclick="go('route')">‹ <span class="es">Ruta</span><span class="enx">Route</span></div><div class="t" style="text-align:center">Ferretería La Bendición</div><span class="badge g" id="custBadge"><span class="es">Activo</span><span class="enx">Active</span></span></div>
+        <div class="ah"><div class="back" onclick="go('route')">‹ <span class="es">Ruta</span><span class="enx">Route</span></div><div class="t" style="text-align:center" id="custStoreTitle">Ferretería La Bendición</div><span class="badge g" id="custBadge"><span class="es">Activo</span><span class="enx">Active</span></span></div>
         <div class="ab">
           <div class="c360">
-            <div class="avatar">MB</div>
-            <div><div style="font-weight:800;font-size:1.05rem">Doña Marta Xitumul</div><div style="font-size:.8rem;color:var(--muted)" id="custSub"><span class="es">Cliente Distun desde 2020 · 73 facturas · Chimaltenango</span><span class="enx">Distun customer since 2020 · 73 invoices · Chimaltenango</span></div></div>
+            <div class="avatar" id="custAvatar">MX</div>
+            <div><div style="font-weight:800;font-size:1.05rem" id="custName">Doña Marta Xitumul</div><div style="font-size:.8rem;color:var(--muted)" id="custSub"><span class="es">Cliente Distun desde 2020 · 73 facturas · Chimaltenango</span><span class="enx">Distun customer since 2020 · 73 invoices · Chimaltenango</span></div></div>
           </div>
           <div class="line-card" id="lineCard">
             <div class="lbl"><span class="es">Línea Crédito Distun · disponible</span><span class="enx">Crédito Distun line · available</span></div>
@@ -408,9 +409,9 @@ const CATALOG=[
   {id:5,es:'Tubo PVC 4" (tira)',en:'PVC pipe 4" (length)',ic:'⚪',price:74,q:0},
 ];
 const SCEN={
-  approved:{name:'Doña Marta · La Bendición',line:75000,used:6000,sub:{es:'Cliente Distun desde 2020 · 73 facturas',en:'Distun customer since 2020 · 73 invoices'},badge:{es:'Activo',en:'Active'},bcls:'g'},
-  partial:{name:'Don Aroldo · El Cerrojo',line:45000,used:0,sub:{es:'Cliente 3 años · línea Q45,000',en:'3-yr customer · Q45,000 line'},badge:{es:'Activo',en:'Active'},bcls:'g'},
-  cold:{name:'Materiales Xela Sur',line:10000,used:0,sub:{es:'Cliente nuevo · 4 meses de historial',en:'New customer · 4 months history'},badge:{es:'Nuevo',en:'New'},bcls:'a'},
+  approved:{person:'Doña Marta Xitumul',store:'Ferretería La Bendición',avatar:'MX',line:75000,used:6000,sub:{es:'Cliente Distun desde 2020 · 73 facturas',en:'Distun customer since 2020 · 73 invoices'},badge:{es:'Activo',en:'Active'},bcls:'g'},
+  partial:{person:'Don Aroldo Pérez',store:'Ferretería El Cerrojo',avatar:'AP',line:45000,used:0,sub:{es:'Cliente 3 años · línea Q45,000',en:'3-yr customer · Q45,000 line'},badge:{es:'Activo',en:'Active'},bcls:'g'},
+  cold:{person:'Materiales Xela Sur',store:'Materiales Xela Sur',avatar:'XS',line:10000,used:0,sub:{es:'Cliente nuevo · 4 meses de historial',en:'New customer · 4 months history'},badge:{es:'Nuevo',en:'New'},bcls:'a'},
 };
 function orderTotal(){const s=CATALOG.reduce((a,i)=>a+i.price*i.q,0);return s+s*.12;}
 
@@ -424,14 +425,15 @@ function go(s){curScreen=s;
   if(s==='decision')renderDecision();
 }
 function setScenario(v){scenario=v;applyScenario();}
-function applyScenario(){const sc=SCEN[scenario];
-  document.getElementById('lineBig').textContent=Q(sc.line);
-  document.getElementById('lineBar').style.width=Math.max(4,Math.round(sc.used/sc.line*100))+'%';
-  document.getElementById('lineUsed').innerHTML=`<span class="es">Usado: ${Q(sc.used)} de ${Q(sc.line)}</span><span class="enx">Used: ${Q(sc.used)} of ${Q(sc.line)}</span>`;
-  document.getElementById('custSub').innerHTML=`<span class="es">${sc.sub.es} · Chimaltenango</span><span class="enx">${sc.sub.en} · Chimaltenango</span>`;
-  document.querySelector('#customer .avatar').textContent = sc.name.match(/[A-Z]/g)? sc.name.match(/\b[A-Za-zÁ-ú]/g).slice(0,2).join('').toUpperCase():'CD';
-  document.querySelector('#customer .t')&&0;
-  document.getElementById('payAvail').innerHTML=`<span class="es">${Q(sc.line)} disponible · sin buró</span><span class="enx">${Q(sc.line)} available · no bureau</span>`;
+function applyScenario(){const sc=SCEN[scenario];const set=(id,prop,val)=>{const el=document.getElementById(id);if(el)el[prop]=val;};
+  set('lineBig','textContent',Q(sc.line));
+  const bar=document.getElementById('lineBar');if(bar)bar.style.width=Math.max(4,Math.round(sc.used/sc.line*100))+'%';
+  set('lineUsed','innerHTML',`<span class="es">Usado: ${Q(sc.used)} de ${Q(sc.line)}</span><span class="enx">Used: ${Q(sc.used)} of ${Q(sc.line)}</span>`);
+  set('custSub','innerHTML',`<span class="es">${sc.sub.es} · Chimaltenango</span><span class="enx">${sc.sub.en} · Chimaltenango</span>`);
+  set('custName','textContent',sc.person);
+  set('custStoreTitle','textContent',sc.store);
+  set('custAvatar','textContent',sc.avatar);
+  set('payAvail','innerHTML',`<span class="es">${Q(sc.line)} disponible · sin buró</span><span class="enx">${Q(sc.line)} available · no bureau</span>`);
 }
 
 /* ---------- catalog ---------- */
