@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crédito Distun — Demo del producto</title>
+<meta name="description" content="Prototipo clickeable: crédito incrustado en el flujo de pedido de Distun, evaluado con historial de compras.">
+<style>
+  :root{
+    --ink:#15233B; --ink-2:#2B3A52; --paper:#FAF7F2; --paper-2:#F1EBE0; --white:#fff;
+    --blue:#1F5FE0; --blue-d:#1842B8; --amber:#F4A300; --green:#1E9E6A; --red:#D8492B; --line:#E4DCCE;
+    --muted:#5C6675; --radius:14px; --shadow:0 12px 40px rgba(21,35,59,.12); --shadow-sm:0 4px 16px rgba(21,35,59,.07);
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .lang-en{display:none}
+  body.en .lang-es{display:none}
+  body.en .lang-en{display:inline}
+  a{color:inherit;text-decoration:none}
+
+  /* top bar */
+  .bar{position:sticky;top:0;z-index:30;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px 20px}
+  .bar .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+  .mark{width:26px;height:26px;border-radius:7px;background:#fff;position:relative}
+  .mark::before{content:"";position:absolute;left:50%;top:5px;transform:translateX(-50%);width:2px;height:10px;background:var(--amber)}
+  .mark::after{content:"";position:absolute;left:50%;top:15px;transform:translateX(-50%);width:8px;height:8px;background:var(--amber);clip-path:polygon(50% 100%,0 0,100% 0)}
+  .bar .right{display:flex;align-items:center;gap:14px}
+  .bar .tag{font-size:.72rem;background:rgba(255,255,255,.14);padding:4px 10px;border-radius:999px}
+  .toggle{display:inline-flex;border:1px solid rgba(255,255,255,.25);border-radius:999px;overflow:hidden}
+  .toggle button{border:0;background:transparent;padding:5px 11px;font-size:.76rem;font-weight:700;cursor:pointer;color:rgba(255,255,255,.7)}
+  .toggle button.active{background:#fff;color:var(--ink)}
+  .bar a.home{font-size:.82rem;color:rgba(255,255,255,.75)}
+
+  .app{max-width:1080px;margin:0 auto;padding:22px 20px 60px;display:grid;grid-template-columns:1.15fr .85fr;gap:22px}
+  @media(max-width:880px){.app{grid-template-columns:1fr}}
+
+  .panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden}
+  .panel .head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .panel .head h2{font-size:1.02rem;font-weight:800;letter-spacing:-.01em}
+  .panel .head .sub{font-size:.78rem;color:var(--muted)}
+  .panel .body{padding:18px}
+
+  /* customer card */
+  .cust{display:flex;gap:12px;align-items:center;padding:14px 18px;background:var(--paper-2);border-bottom:1px solid var(--line)}
+  .avatar{width:44px;height:44px;border-radius:11px;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.05rem}
+  .cust .nm{font-weight:800}
+  .cust .meta{font-size:.78rem;color:var(--muted)}
+
+  /* catalog */
+  .item{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px dashed var(--line)}
+  .item:last-child{border-bottom:0}
+  .item .info{display:flex;gap:11px;align-items:center}
+  .item .sku{width:38px;height:38px;border-radius:9px;background:var(--paper-2);display:grid;place-items:center;font-size:1.1rem}
+  .item .t{font-weight:600;font-size:.92rem}
+  .item .p{font-size:.78rem;color:var(--muted)}
+  .qty{display:flex;align-items:center;gap:8px}
+  .qty button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:var(--white);font-size:1rem;font-weight:700;cursor:pointer;color:var(--ink)}
+  .qty span{min-width:22px;text-align:center;font-weight:700}
+
+  .order-foot{padding:16px 18px;border-top:1px solid var(--line);background:var(--paper)}
+  .row{display:flex;justify-content:space-between;align-items:center;font-size:.9rem;margin-bottom:6px;color:var(--ink-2)}
+  .row.tot{font-size:1.25rem;font-weight:800;color:var(--ink);margin-top:8px}
+  .btn{display:block;width:100%;text-align:center;background:var(--blue);color:#fff;padding:14px;border-radius:12px;font-weight:800;font-size:1rem;border:0;cursor:pointer;margin-top:14px;transition:transform .12s,box-shadow .12s;box-shadow:0 6px 18px rgba(31,95,224,.28)}
+  .btn:hover{transform:translateY(-1px)}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+  .btn.green{background:var(--green);box-shadow:0 6px 18px rgba(30,158,106,.28)}
+  .btn.ghost{background:var(--white);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+
+  /* right column: underwriting */
+  .uw .head{background:var(--ink);color:#fff;border-bottom:0}
+  .uw .head h2,.uw .head .sub{color:#fff}
+  .uw .head .sub{opacity:.7}
+  .uw-state{padding:22px 18px}
+  .scan{text-align:center;padding:20px 0}
+  .spinner{width:46px;height:46px;border-radius:50%;border:4px solid var(--paper-2);border-top-color:var(--blue);margin:0 auto 14px;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .signals{display:grid;gap:9px;margin-top:6px}
+  .sig{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;padding:9px 12px;border-radius:10px;background:var(--paper);border:1px solid var(--line);opacity:0;transform:translateY(6px);animation:rise .4s forwards}
+  .sig b{font-weight:700}
+  .sig .v{font-weight:800;color:var(--green)}
+  .sig .v.warn{color:var(--amber)}
+  @keyframes rise{to{opacity:1;transform:none}}
+
+  .decision{text-align:center;padding:8px 4px 0}
+  .score-ring{width:120px;height:120px;margin:0 auto 10px;border-radius:50%;background:conic-gradient(var(--green) var(--deg,0deg),var(--paper-2) 0);display:grid;place-items:center;transition:--deg 1s}
+  .score-inner{width:92px;height:92px;border-radius:50%;background:var(--white);display:grid;place-items:center;flex-direction:column}
+  .score-inner .num{font-size:1.9rem;font-weight:800;line-height:1}
+  .score-inner .lbl{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+  .verdict{font-weight:800;font-size:1.05rem;color:var(--green);margin:4px 0}
+  .limit{font-size:2.2rem;font-weight:800;letter-spacing:-.02em;margin:2px 0}
+  .limit-l{font-size:.78rem;color:var(--muted)}
+
+  .terms{display:grid;gap:10px;margin-top:16px}
+  .term{border:1px solid var(--line);border-radius:12px;padding:13px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:.12s}
+  .term:hover{border-color:var(--blue)}
+  .term.sel{border-color:var(--green);background:rgba(30,158,106,.06);box-shadow:inset 0 0 0 1px var(--green)}
+  .term .t{font-weight:800}
+  .term .s{font-size:.76rem;color:var(--muted)}
+  .term .fee{font-weight:800;font-size:.95rem}
+  .term .fee small{color:var(--muted);font-weight:600;font-size:.7rem;display:block}
+
+  .empty{padding:40px 22px;text-align:center;color:var(--muted)}
+  .empty .big{font-size:2.4rem;margin-bottom:8px}
+
+  /* success */
+  .done{padding:34px 22px;text-align:center}
+  .check{width:72px;height:72px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-size:2.2rem;margin:0 auto 16px;animation:pop .4s}
+  @keyframes pop{from{transform:scale(.6);opacity:0}}
+  .done h3{font-size:1.3rem;margin-bottom:6px}
+  .done p{color:var(--muted);font-size:.92rem}
+  .receipt{background:var(--paper);border:1px dashed var(--line);border-radius:12px;padding:16px;margin:18px 0;text-align:left;font-size:.86rem}
+  .receipt .row{margin-bottom:8px}
+  .disc{font-size:.72rem;color:var(--muted);padding:14px 20px;text-align:center;border-top:1px solid var(--line)}
+  .stepnote{font-size:.76rem;color:var(--muted);margin-top:10px;text-align:center}
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="brand"><span class="mark"></span> Crédito Distun <span class="tag">DEMO · POS Distun</span></div>
+  <div class="right">
+    <div class="toggle"><button id="es" class="active" onclick="setLang('es')">ES</button><button id="en" onclick="setLang('en')">EN</button></div>
+    <a class="home" href="../"><span class="lang-es">← Inicio</span><span class="lang-en">← Home</span></a>
+  </div>
+</div>
+
+<div class="app">
+  <!-- ORDER -->
+  <div class="panel">
+    <div class="head">
+      <div><h2><span class="lang-es">Nuevo pedido</span><span class="lang-en">New order</span></h2><div class="sub"><span class="lang-es">Tablet del vendedor · Sucursal Zona 12</span><span class="lang-en">Sales-rep tablet · Branch Zona 12</span></div></div>
+    </div>
+    <div class="cust">
+      <div class="avatar">EC</div>
+      <div>
+        <div class="nm">Ferretería El Constructor</div>
+        <div class="meta"><span class="lang-es">Cliente Distun desde 2019 · 47 pedidos · Zona 12, Guatemala</span><span class="lang-en">Distun customer since 2019 · 47 orders · Zona 12, Guatemala</span></div>
+      </div>
+    </div>
+    <div class="body" id="catalog"></div>
+    <div class="order-foot">
+      <div class="row"><span class="lang-es">Subtotal</span><span class="lang-en">Subtotal</span><span id="subtotal">Q 0.00</span></div>
+      <div class="row"><span>IVA (12%)</span><span id="iva">Q 0.00</span></div>
+      <div class="row tot"><span>Total</span><span id="total">Q 0.00</span></div>
+      <button class="btn" id="financeBtn" onclick="runUnderwriting()" disabled><span class="lang-es">Financiar este pedido →</span><span class="lang-en">Finance this order →</span></button>
+      <div class="stepnote"><span class="lang-es">Agrega productos para evaluar el crédito</span><span class="lang-en">Add products to assess credit</span></div>
+    </div>
+  </div>
+
+  <!-- UNDERWRITING -->
+  <div class="panel uw">
+    <div class="head"><div><h2>⚡ <span class="lang-es">Evaluación de crédito</span><span class="lang-en">Credit underwriting</span></h2><div class="sub"><span class="lang-es">Modelo: historial de compras Distun</span><span class="lang-en">Model: Distun purchase history</span></div></div></div>
+    <div id="uwState" class="uw-state">
+      <div class="empty">
+        <div class="big">🧮</div>
+        <p><span class="lang-es">El límite se calcula con el comportamiento de compra del cliente — sin buró, sin papeleo.</span><span class="lang-en">The limit is computed from the customer's buying behavior — no bureau, no paperwork.</span></p>
+      </div>
+    </div>
+    <div class="disc"><span class="lang-es">Prototipo. Evaluación simulada en el navegador con datos ilustrativos — no es una decisión de crédito real.</span><span class="lang-en">Prototype. Underwriting simulated in-browser with illustrative data — not a real credit decision.</span></div>
+  </div>
+</div>
+
+<script>
+  function setLang(l){document.body.classList.toggle('en',l==='en');document.documentElement.lang=l;
+    document.getElementById('es').classList.toggle('active',l==='es');document.getElementById('en').classList.toggle('active',l==='en');
+    try{localStorage.setItem('cd_lang',l)}catch(e){}}
+  try{if(localStorage.getItem('cd_lang')==='en')setLang('en');}catch(e){}
+
+  const T = {
+    es:{approved:'APROBADO',line:'Línea de crédito aprobada',score:'Puntaje',choose:'Elige un plazo de pago',approve:'Aprobar pedido',done:'¡Pedido aprobado!',doneSub:'El pedido se envía a bodega. El cliente paga cuando cobra la obra.',order:'Pedido',term:'Plazo',fee:'Cargo',due:'Vence',newOrder:'Nuevo pedido',analyzing:'Analizando historial de compras…',sigOrders:'Pedidos en 24 meses',sigPay:'Comportamiento de pago',sigTrend:'Tendencia de compra',sigTenure:'Antigüedad',onTime:'98% a tiempo',rising:'Creciente',yrs:'6 años',free:'Sin costo',pay30:'Paga en 30 días',pay60:'Paga en 60 días',pay90:'Paga en 90 días',flat:'tarifa fija',days:'días'},
+    en:{approved:'APPROVED',line:'Approved credit line',score:'Score',choose:'Choose a payment term',approve:'Approve order',done:'Order approved!',doneSub:'The order ships to the warehouse. The customer pays when the job pays.',order:'Order',term:'Term',fee:'Fee',due:'Due',newOrder:'New order',analyzing:'Analyzing purchase history…',sigOrders:'Orders in 24 months',sigPay:'Payment behavior',sigTrend:'Purchase trend',sigTenure:'Tenure',onTime:'98% on time',rising:'Rising',yrs:'6 years',free:'Free',pay30:'Pay in 30 days',pay60:'Pay in 60 days',pay90:'Pay in 90 days',flat:'flat fee',days:'days'}
+  };
+  const L = ()=> document.body.classList.contains('en')?T.en:T.es;
+  const Q = n => 'Q '+n.toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+  const CATALOG = [
+    {id:1,es:'Cemento UGC 42.5kg',en:'Cement UGC 42.5kg',ic:'🧱',price:92,q:0},
+    {id:2,es:'Varilla de hierro 3/8" (qq)',en:'Rebar 3/8" (cwt)',ic:'🔩',price:340,q:0},
+    {id:3,es:'Block 15×20×40 (ciento)',en:'Block 15×20×40 (per 100)',ic:'🧊',price:520,q:0},
+    {id:4,es:'Lámina galvanizada calibre 26',en:'Galvanized sheet ga. 26',ic:'⬛',price:128,q:0},
+    {id:5,es:'Tubo PVC 4" (tira)',en:'PVC pipe 4" (length)',ic:'⚪',price:74,q:0}
+  ];
+  let selectedTerm=null, lastLimit=0, lastTotal=0;
+
+  function renderCatalog(){
+    const c=document.getElementById('catalog');const en=document.body.classList.contains('en');
+    c.innerHTML = CATALOG.map(i=>`
+      <div class="item">
+        <div class="info"><div class="sku">${i.ic}</div>
+          <div><div class="t">${en?i.en:i.es}</div><div class="p">${Q(i.price)}</div></div></div>
+        <div class="qty">
+          <button onclick="chg(${i.id},-1)">−</button><span id="q${i.id}">${i.q}</span><button onclick="chg(${i.id},1)">+</button>
+        </div>
+      </div>`).join('');
+  }
+  function chg(id,d){const it=CATALOG.find(x=>x.id===id);it.q=Math.max(0,it.q+d);document.getElementById('q'+id).textContent=it.q;recompute();}
+  function recompute(){
+    const sub=CATALOG.reduce((s,i)=>s+i.price*i.q,0);const iva=sub*.12;const tot=sub+iva;lastTotal=tot;
+    document.getElementById('subtotal').textContent=Q(sub);
+    document.getElementById('iva').textContent=Q(iva);
+    document.getElementById('total').textContent=Q(tot);
+    document.getElementById('financeBtn').disabled = sub<=0;
+  }
+
+  function runUnderwriting(){
+    const t=L();const el=document.getElementById('uwState');
+    el.innerHTML=`<div class="scan"><div class="spinner"></div><p>${t.analyzing}</p></div>`;
+    const sigs=[
+      {b:t.sigOrders,v:'47',cls:''},{b:t.sigPay,v:t.onTime,cls:''},
+      {b:t.sigTrend,v:t.rising,cls:''},{b:t.sigTenure,v:t.yrs,cls:''}
+    ];
+    setTimeout(()=>{
+      el.innerHTML=`<div class="signals">${sigs.map((s,i)=>`<div class="sig" style="animation-delay:${i*.12}s"><b>${s.b}</b><span class="v ${s.cls}">${s.v}</span></div>`).join('')}</div>`;
+    },650);
+    setTimeout(()=>showDecision(),1700);
+  }
+
+  function showDecision(){
+    const t=L();const el=document.getElementById('uwState');
+    // limit derived from order size, capped — illustrative
+    const limit = Math.max(20000, Math.ceil((lastTotal*2.4)/1000)*1000 + 8000);
+    lastLimit=limit;
+    el.innerHTML=`
+      <div class="decision">
+        <div class="score-ring" id="ring"><div class="score-inner"><div class="num">A-</div><div class="lbl">${t.score}</div></div></div>
+        <div class="verdict">✓ ${t.approved}</div>
+        <div class="limit-l">${t.line}</div>
+        <div class="limit">${Q(limit)}</div>
+      </div>
+      <div style="font-weight:800;font-size:.9rem;margin:18px 0 4px">${t.choose}</div>
+      <div class="terms" id="terms">
+        <div class="term sel" data-term="30" data-fee="0" onclick="pick(this)">
+          <div><div class="t">Net-30</div><div class="s">${t.pay30}</div></div>
+          <div class="fee">${t.free}<small>0%</small></div>
+        </div>
+        <div class="term" data-term="60" data-fee="0.035" onclick="pick(this)">
+          <div><div class="t">Net-60</div><div class="s">${t.pay60}</div></div>
+          <div class="fee">${Q(lastTotal*0.035)}<small>3.5% ${t.flat}</small></div>
+        </div>
+        <div class="term" data-term="90" data-fee="0.055" onclick="pick(this)">
+          <div><div class="t">Net-90</div><div class="s">${t.pay90}</div></div>
+          <div class="fee">${Q(lastTotal*0.055)}<small>5.5% ${t.flat}</small></div>
+        </div>
+      </div>
+      <button class="btn green" onclick="approve()" style="margin-top:16px">${t.approve} ✓</button>`;
+    selectedTerm={term:30,fee:0};
+    requestAnimationFrame(()=>{const r=document.getElementById('ring');if(r)r.style.background='conic-gradient(var(--green) 306deg,var(--paper-2) 0)';});
+  }
+  function pick(e){document.querySelectorAll('.term').forEach(x=>x.classList.remove('sel'));e.classList.add('sel');
+    selectedTerm={term:+e.dataset.term,fee:+e.dataset.fee};}
+
+  function approve(){
+    const t=L();const el=document.getElementById('uwState');
+    const fee=lastTotal*selectedTerm.fee;const due=lastTotal+fee;
+    const d=new Date(2026,5,28);d.setDate(d.getDate()+selectedTerm.term);
+    const dd=d.toLocaleDateString(document.body.classList.contains('en')?'en-US':'es-GT',{day:'2-digit',month:'short',year:'numeric'});
+    el.innerHTML=`<div class="done">
+      <div class="check">✓</div>
+      <h3>${t.done}</h3><p>${t.doneSub}</p>
+      <div class="receipt">
+        <div class="row"><span>${t.order}</span><b>${Q(lastTotal)}</b></div>
+        <div class="row"><span>${t.term}</span><b>Net-${selectedTerm.term}</b></div>
+        <div class="row"><span>${t.fee}</span><b>${fee>0?Q(fee):t.free}</b></div>
+        <div class="row" style="border-top:1px solid var(--line);padding-top:8px"><span>${t.due} (${dd})</span><b>${Q(due)}</b></div>
+      </div>
+      <button class="btn ghost" onclick="reset()">${t.newOrder}</button>
+    </div>`;
+  }
+  function reset(){CATALOG.forEach(i=>i.q=0);renderCatalog();recompute();
+    document.getElementById('uwState').innerHTML=`<div class="empty"><div class="big">🧮</div><p>${L()===T.en?'The limit is computed from the customer\\'s buying behavior — no bureau, no paperwork.':'El límite se calcula con el comportamiento de compra del cliente — sin buró, sin papeleo.'}</p></div>`;}
+
+  renderCatalog();recompute();
+</script>
+</body>
+</html>

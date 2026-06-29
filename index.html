@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crédito Distun — Compra hoy, paga cuando cobras</title>
+<meta name="description" content="Crédito incrustado para ferreterías y contratistas: financia tu pedido en el momento de la compra, evaluado con tu historial en Distun. Embedded credit for hardware stores and contractors.">
+<style>
+  :root{
+    --ink:#15233B; --ink-2:#2B3A52; --paper:#FAF7F2; --paper-2:#F1EBE0; --white:#fff;
+    --blue:#1F5FE0; --blue-d:#1842B8; --amber:#F4A300; --green:#1E9E6A; --line:#E4DCCE;
+    --muted:#5C6675; --radius:16px; --shadow:0 12px 40px rgba(21,35,59,.10); --shadow-sm:0 4px 16px rgba(21,35,59,.07);
+    --maxw:1120px; --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  h1,h2,h3{line-height:1.12;letter-spacing:-.02em;font-weight:800}
+  h1{font-size:clamp(2.1rem,5.2vw,3.7rem)}
+  h2{font-size:clamp(1.6rem,3.6vw,2.5rem)}
+  p{color:var(--ink-2)}
+  a{color:inherit;text-decoration:none}
+  .lang-en{display:none}
+  body.en .lang-es{display:none}
+  body.en .lang-en{display:inline}
+  body.en .blk.lang-es{display:none}
+  body.en .blk.lang-en{display:block}
+  .blk.lang-en{display:none}
+
+  /* NAV */
+  header{position:sticky;top:0;z-index:50;background:rgba(250,247,242,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.12rem;letter-spacing:-.02em}
+  .mark{width:30px;height:30px;border-radius:8px;background:var(--ink);position:relative;flex:0 0 auto}
+  .mark::before{content:"";position:absolute;left:50%;top:5px;transform:translateX(-50%);width:2px;height:13px;background:var(--amber)}
+  .mark::after{content:"";position:absolute;left:50%;top:18px;transform:translateX(-50%);width:9px;height:9px;background:var(--amber);clip-path:polygon(50% 100%,0 0,100% 0)}
+  .nav-actions{display:flex;align-items:center;gap:18px}
+  .nav-links{display:flex;gap:24px}
+  .nav-links a{color:var(--muted);font-size:.93rem;font-weight:500}
+  .nav-links a:hover{color:var(--ink)}
+  .toggle{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--white)}
+  .toggle button{border:0;background:transparent;padding:6px 12px;font-size:.8rem;font-weight:700;cursor:pointer;color:var(--muted)}
+  .toggle button.active{background:var(--ink);color:var(--white)}
+  .btn{display:inline-block;background:var(--blue);color:#fff;padding:12px 22px;border-radius:999px;font-weight:700;font-size:.95rem;border:0;cursor:pointer;transition:transform .12s,box-shadow .12s;box-shadow:0 6px 18px rgba(31,95,224,.28)}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 10px 26px rgba(31,95,224,.36)}
+  .btn.ghost{background:transparent;color:var(--ink);box-shadow:none;border:1px solid var(--line)}
+  .btn.amber{background:var(--amber);color:var(--ink);box-shadow:0 6px 18px rgba(244,163,0,.3)}
+  @media(max-width:760px){.nav-links{display:none}}
+
+  /* HERO */
+  .hero{padding:72px 0 56px;position:relative;overflow:hidden}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+  .eyebrow{display:inline-flex;align-items:center;gap:8px;background:var(--paper-2);border:1px solid var(--line);color:var(--ink-2);font-weight:600;font-size:.82rem;padding:6px 14px;border-radius:999px;margin-bottom:22px}
+  .eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--green)}
+  .hero p.lead{font-size:1.18rem;margin:22px 0 30px;max-width:33ch}
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .hero-note{font-size:.85rem;color:var(--muted);margin-top:18px}
+  @media(max-width:860px){.hero-grid{grid-template-columns:1fr;gap:36px}.hero p.lead{max-width:none}}
+
+  /* phone mock */
+  .phone{margin:0 auto;width:300px;max-width:100%;background:var(--ink);border-radius:34px;padding:12px;box-shadow:var(--shadow);position:relative}
+  .phone-screen{background:var(--white);border-radius:24px;overflow:hidden}
+  .ps-top{background:var(--ink);color:#fff;padding:14px 16px 16px;border-radius:24px 24px 0 0}
+  .ps-top .store{font-size:.78rem;opacity:.7}
+  .ps-top .amt{font-size:1.7rem;font-weight:800;letter-spacing:-.02em;margin-top:2px}
+  .ps-body{padding:16px}
+  .credit-card-ui{background:linear-gradient(135deg,var(--blue),var(--blue-d));color:#fff;border-radius:14px;padding:16px;margin-bottom:14px}
+  .credit-card-ui .lbl{font-size:.72rem;opacity:.85}
+  .credit-card-ui .big{font-size:1.5rem;font-weight:800;margin:2px 0 4px}
+  .bar{height:7px;border-radius:4px;background:rgba(255,255,255,.25);overflow:hidden;margin-top:8px}
+  .bar > i{display:block;height:100%;width:46%;background:var(--amber)}
+  .opt{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+  .opt.sel{border-color:var(--green);background:rgba(30,158,106,.06)}
+  .opt .t{font-weight:700;font-size:.92rem}
+  .opt .s{font-size:.76rem;color:var(--muted)}
+  .opt .pill{font-size:.7rem;font-weight:700;color:var(--green);background:rgba(30,158,106,.12);padding:3px 9px;border-radius:999px}
+  .ps-cta{background:var(--green);color:#fff;text-align:center;font-weight:700;padding:13px;border-radius:12px;font-size:.95rem}
+
+  /* trust strip */
+  .strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--white)}
+  .strip .wrap{display:flex;gap:40px;justify-content:space-between;flex-wrap:wrap;padding:26px 24px}
+  .stat .n{font-size:1.7rem;font-weight:800;letter-spacing:-.02em}
+  .stat .n b{color:var(--blue)}
+  .stat .l{font-size:.82rem;color:var(--muted);max-width:24ch}
+
+  /* sections */
+  section.pad{padding:80px 0}
+  .sec-head{max-width:62ch;margin-bottom:46px}
+  .sec-head .kick{color:var(--amber);font-weight:800;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase}
+  .sec-head h2{margin:10px 0 14px}
+  .sec-head p{font-size:1.08rem}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow-sm)}
+  .card .ic{width:42px;height:42px;border-radius:11px;background:var(--paper-2);display:grid;place-items:center;font-size:1.3rem;margin-bottom:16px}
+  .card h3{font-size:1.16rem;margin-bottom:8px}
+  .card p{font-size:.95rem}
+  .card .step{font-size:.78rem;font-weight:800;color:var(--amber);letter-spacing:.05em}
+  @media(max-width:860px){.cards{grid-template-columns:1fr}}
+
+  /* moat band */
+  .band{background:var(--ink);color:#fff;border-radius:24px;padding:54px;display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center}
+  .band h2{color:#fff}
+  .band p{color:rgba(255,255,255,.78);font-size:1.05rem}
+  .band ul{list-style:none;margin-top:18px;display:grid;gap:14px}
+  .band li{display:flex;gap:12px;align-items:flex-start;color:rgba(255,255,255,.9);font-size:.98rem}
+  .band li b{color:#fff}
+  .band li .chk{flex:0 0 auto;width:22px;height:22px;border-radius:50%;background:var(--green);display:grid;place-items:center;font-size:.75rem;margin-top:2px}
+  @media(max-width:860px){.band{grid-template-columns:1fr;padding:34px}}
+
+  /* pricing */
+  .price-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:760px;margin:0 auto}
+  .price{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:30px;box-shadow:var(--shadow-sm);position:relative}
+  .price.feat{border-color:var(--amber);border-width:2px}
+  .price .tag{position:absolute;top:-12px;right:22px;background:var(--amber);color:var(--ink);font-size:.72rem;font-weight:800;padding:4px 12px;border-radius:999px}
+  .price .term{font-size:.9rem;font-weight:700;color:var(--muted)}
+  .price .fee{font-size:2.6rem;font-weight:800;letter-spacing:-.03em;margin:6px 0}
+  .price .fee small{font-size:1rem;color:var(--muted);font-weight:600}
+  .price ul{list-style:none;margin-top:14px;display:grid;gap:9px}
+  .price li{font-size:.92rem;color:var(--ink-2);display:flex;gap:9px}
+  .price li::before{content:"✓";color:var(--green);font-weight:800}
+  @media(max-width:680px){.price-grid{grid-template-columns:1fr}}
+
+  /* why-now / proof */
+  .proof{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .proof .p{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:22px}
+  .proof .p .n{font-size:1.5rem;font-weight:800;color:var(--blue)}
+  .proof .p .l{font-size:.88rem;color:var(--muted);margin-top:4px}
+  @media(max-width:860px){.proof{grid-template-columns:1fr}}
+
+  /* cta */
+  .cta-band{background:linear-gradient(135deg,var(--blue),var(--blue-d));color:#fff;border-radius:24px;padding:56px;text-align:center}
+  .cta-band h2{color:#fff;margin-bottom:14px}
+  .cta-band p{color:rgba(255,255,255,.85);max-width:48ch;margin:0 auto 26px;font-size:1.06rem}
+
+  footer{padding:48px 0 60px;border-top:1px solid var(--line);margin-top:10px}
+  .foot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center}
+  .foot .muted{color:var(--muted);font-size:.85rem;max-width:46ch}
+  .badge{display:inline-flex;align-items:center;gap:8px;font-size:.8rem;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:var(--white)}
+  .disc{font-size:.74rem;color:var(--muted);margin-top:20px;max-width:80ch}
+</style>
+</head>
+<body>
+<header>
+  <nav class="wrap">
+    <div class="brand"><span class="mark"></span> Crédito&nbsp;Distun</div>
+    <div class="nav-links">
+      <a href="#como"><span class="lang-es">Cómo funciona</span><span class="lang-en">How it works</span></a>
+      <a href="#ventaja"><span class="lang-es">La ventaja</span><span class="lang-en">The advantage</span></a>
+      <a href="#precios"><span class="lang-es">Precios</span><span class="lang-en">Pricing</span></a>
+      <a href="app/"><span class="lang-es">Demo</span><span class="lang-en">Demo</span></a>
+    </div>
+    <div class="nav-actions">
+      <div class="toggle" role="group" aria-label="Language">
+        <button id="es" class="active" onclick="setLang('es')">ES</button>
+        <button id="en" onclick="setLang('en')">EN</button>
+      </div>
+      <a class="btn" href="app/"><span class="lang-es">Ver demo</span><span class="lang-en">See demo</span></a>
+    </div>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span><span class="lang-es">Crédito incrustado · Powered by Grupo AG · Distun</span><span class="lang-en">Embedded credit · Powered by Grupo AG · Distun</span></span>
+      <h1><span class="lang-es">Compra hoy, paga cuando cobras.</span><span class="lang-en">Buy today, pay when you get paid.</span></h1>
+      <p class="lead"><span class="lang-es">Crédito de materiales para ferreterías y contratistas — aprobado en el mostrador, evaluado con tu historial de compras en Distun. Sin buró, sin papeleo.</span><span class="lang-en">Materials credit for hardware stores and contractors — approved at the counter, underwritten on your Distun purchase history. No bureau file, no paperwork.</span></p>
+      <div class="hero-cta">
+        <a class="btn amber" href="app/"><span class="lang-es">Probar la demo →</span><span class="lang-en">Try the demo →</span></a>
+        <a class="btn ghost" href="#como"><span class="lang-es">Cómo funciona</span><span class="lang-en">How it works</span></a>
+      </div>
+      <p class="hero-note"><span class="lang-es">Net-30 sin costo · Net-60/90 con tarifa fija · Límite pre-aprobado por tu comportamiento de compra.</span><span class="lang-en">Net-30 free · Net-60/90 flat fee · Limit pre-approved from your buying behavior.</span></p>
+    </div>
+    <div>
+      <div class="phone">
+        <div class="phone-screen">
+          <div class="ps-top">
+            <div class="store">Ferretería El Constructor · Distun</div>
+            <div class="amt">Q 18,400.00</div>
+          </div>
+          <div class="ps-body">
+            <div class="credit-card-ui">
+              <div class="lbl"><span class="lang-es">Línea disponible</span><span class="lang-en">Available line</span></div>
+              <div class="big">Q 32,000</div>
+              <div class="lbl"><span class="lang-es">Usado: Q 14,600</span><span class="lang-en">Used: Q 14,600</span></div>
+              <div class="bar"><i></i></div>
+            </div>
+            <div class="opt sel">
+              <div><div class="t">Net-30</div><div class="s"><span class="lang-es">Paga en 30 días</span><span class="lang-en">Pay in 30 days</span></div></div>
+              <span class="pill"><span class="lang-es">Sin costo</span><span class="lang-en">Free</span></span>
+            </div>
+            <div class="opt">
+              <div><div class="t">Net-60</div><div class="s"><span class="lang-es">Tarifa 3.5%</span><span class="lang-en">3.5% flat fee</span></div></div>
+              <span class="s">Q 644</span>
+            </div>
+            <div class="ps-cta"><span class="lang-es">Aprobar pedido ✓</span><span class="lang-en">Approve order ✓</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST STRIP -->
+<div class="strip">
+  <div class="wrap">
+    <div class="stat"><div class="n"><b>~$120B</b></div><div class="l"><span class="lang-es">Canal ferretero regional (TAM, LatAm)</span><span class="lang-en">Regional hardware channel (TAM, LatAm)</span></div></div>
+    <div class="stat"><div class="n"><b>$0</b></div><div class="l"><span class="lang-es">Costo de adquisición — el cliente ya compra en Distun</span><span class="lang-en">Customer acquisition cost — they already buy from Distun</span></div></div>
+    <div class="stat"><div class="n"><b>Sin licencia</b></div><div class="l"><span class="lang-es">SIB para prestar capital propio/warehouse (Guatemala)</span><span class="lang-en">SIB license to lend own/warehouse capital (Guatemala)</span></div></div>
+    <div class="stat"><div class="n">+416%</div><div class="l"><span class="lang-es">Crecimiento de fintechs en Guatemala en 5 años</span><span class="lang-en">Guatemala fintech growth over 5 years</span></div></div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="pad" id="como">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kick"><span class="lang-es">Cómo funciona</span><span class="lang-en">How it works</span></div>
+      <h2><span class="lang-es">Crédito incrustado en el pedido. Tres toques.</span><span class="lang-en">Credit embedded in the order. Three taps.</span></h2>
+      <p><span class="lang-es">El crédito vive dentro del flujo de compra de Distun — mostrador, app o tablet del vendedor. No es una app que descargar; es una opción al momento de pedir.</span><span class="lang-en">Credit lives inside the Distun order flow — counter, app, or sales-rep tablet. Not an app to download; an option at the moment of ordering.</span></p>
+    </div>
+    <div class="cards">
+      <div class="card"><div class="ic">🧾</div><div class="step">01</div><h3><span class="lang-es">Arma el pedido</span><span class="lang-en">Build the order</span></h3><p><span class="lang-es">La ferretería o el contratista hace su pedido en Distun como siempre — en el mostrador o con el vendedor.</span><span class="lang-en">The store or contractor places its Distun order as usual — at the counter or with the rep.</span></p></div>
+      <div class="card"><div class="ic">⚡</div><div class="step">02</div><h3><span class="lang-es">Límite pre-aprobado</span><span class="lang-en">Pre-approved limit</span></h3><p><span class="lang-es">El límite ya está listo, calculado con el historial de compras en Distun. Sin buró, sin estados financieros, sin espera.</span><span class="lang-en">The limit is already there, computed from Distun purchase history. No bureau, no financial statements, no waiting.</span></p></div>
+      <div class="card"><div class="ic">✅</div><div class="step">03</div><h3><span class="lang-es">Elige y aprueba</span><span class="lang-en">Choose and approve</span></h3><p><span class="lang-es">Net-30 sin costo o un plazo mayor por una tarifa fija. Un toque y el pedido sale. Pagas cuando cobras la obra.</span><span class="lang-en">Net-30 free or a longer term for a flat fee. One tap and the order ships. Pay when the job pays.</span></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- MOAT -->
+<section class="pad" id="ventaja" style="padding-top:0">
+  <div class="wrap">
+    <div class="band">
+      <div>
+        <div class="kick" style="color:var(--amber);font-weight:800;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase"><span class="lang-es">La ventaja</span><span class="lang-en">The advantage</span></div>
+        <h2 style="margin:10px 0 12px"><span class="lang-es">El historial de compras es el modelo de crédito.</span><span class="lang-en">Purchase history is the credit model.</span></h2>
+        <p><span class="lang-es">Los bancos no pueden ver lo que Distun ya sabe: qué compra cada cliente, con qué frecuencia y si sigue comprando. Ese comportamiento — no un buró que no existe — es lo que evaluamos.</span><span class="lang-en">Banks can't see what Distun already knows: what each customer buys, how often, and whether they keep buying. That behavior — not a bureau file that doesn't exist — is what we underwrite.</span></p>
+      </div>
+      <ul>
+        <li><span class="chk">✓</span><span><b><span class="lang-es">Dato propietario.</span><span class="lang-en">Proprietary data.</span></b> <span class="lang-es">Años de comportamiento de compra que ningún prestamista horizontal tiene.</span><span class="lang-en">Years of buying behavior no horizontal lender has.</span></span></li>
+        <li><span class="chk">✓</span><span><b><span class="lang-es">Canal cautivo.</span><span class="lang-en">Captive channel.</span></b> <span class="lang-es">AG ya da crédito informal — esto lo formaliza y lo pone a precio. Libro de préstamos desde el día uno.</span><span class="lang-en">AG already extends informal terms — this formalizes and prices it. A loan book on day one.</span></span></li>
+        <li><span class="chk">✓</span><span><b><span class="lang-es">Espacio en blanco.</span><span class="lang-en">Whitespace.</span></b> <span class="lang-es">Los competidores (R2, Tul, Kontempo) están en MX/CO/BR — nadie a escala en Centroamérica.</span><span class="lang-en">Competitors (R2, Tul, Kontempo) are in MX/CO/BR — none at scale in Central America.</span></span></li>
+        <li><span class="chk">✓</span><span><b><span class="lang-es">Transferible.</span><span class="lang-en">Transferable.</span></b> <span class="lang-es">El rail de crédito para cualquier distribuidor de materiales — no solo Distun.</span><span class="lang-en">The credit rail for any materials distributor — not only Distun.</span></span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pad" id="precios" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head" style="text-align:center;margin:0 auto 40px">
+      <div class="kick"><span class="lang-es">Precios</span><span class="lang-en">Pricing</span></div>
+      <h2><span class="lang-es">Una decisión simple en el mostrador.</span><span class="lang-en">One simple choice at the counter.</span></h2>
+      <p style="margin:0 auto"><span class="lang-es">Hecho para cómo paga una obra: cuando el trabajo paga.</span><span class="lang-en">Built for how a job pays: when the work pays.</span></p>
+    </div>
+    <div class="price-grid">
+      <div class="price feat">
+        <span class="tag"><span class="lang-es">Más usado</span><span class="lang-en">Most used</span></span>
+        <div class="term">Net-30</div>
+        <div class="fee">0% <small><span class="lang-es">para el comprador</span><span class="lang-en">to the buyer</span></small></div>
+        <ul>
+          <li><span class="lang-es">30 días sin costo para la ferretería</span><span class="lang-en">30 days free for the store</span></li>
+          <li><span class="lang-es">Financiado por el comercio (2% MDR a Distun)</span><span class="lang-en">Merchant-funded (2% MDR from Distun)</span></li>
+          <li><span class="lang-es">Sube el tamaño del pedido y la lealtad</span><span class="lang-en">Lifts order size and loyalty</span></li>
+        </ul>
+      </div>
+      <div class="price">
+        <div class="term">Net-60 / Net-90</div>
+        <div class="fee">3.5–6% <small><span class="lang-es">tarifa fija</span><span class="lang-en">flat fee</span></small></div>
+        <ul>
+          <li><span class="lang-es">Plazo mayor "respaldado por la obra"</span><span class="lang-en">Longer term "underwritten by the job"</span></li>
+          <li><span class="lang-es">Tarifa fija, no APR — claro para el cliente</span><span class="lang-en">Flat fee, not APR — clear to the customer</span></li>
+          <li><span class="lang-es">Por debajo de la tasa informal / tarjeta</span><span class="lang-en">Below informal / card rates</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY NOW / PROOF -->
+<section class="pad" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kick"><span class="lang-es">Por qué ahora</span><span class="lang-en">Why now</span></div>
+      <h2><span class="lang-es">La ventana está abierta — y se está formalizando.</span><span class="lang-en">The window is open — and formalizing.</span></h2>
+    </div>
+    <div class="proof">
+      <div class="p"><div class="n">US$12.7B</div><div class="l"><span class="lang-es">Pagos digitales en Guatemala (2025) — los rieles ya existen <a href="#fuentes" style="color:var(--blue)">¹</a></span><span class="lang-en">Guatemala digital payments (2025) — the rails now exist <a href="#fuentes" style="color:var(--blue)">¹</a></span></div></div>
+      <div class="p"><div class="n">Net-terms ≠ banco</div><div class="l"><span class="lang-es">Prestar capital propio/warehouse no requiere licencia SIB; el factoraje está codificado (Decreto 1-2018) <a href="#fuentes" style="color:var(--blue)">²</a></span><span class="lang-en">Lending own/warehouse capital needs no SIB license; factoring is codified (Decreto 1-2018) <a href="#fuentes" style="color:var(--blue)">²</a></span></div></div>
+      <div class="p"><div class="n">Slope · R2 · Tul</div><div class="l"><span class="lang-es">El modelo está probado y financiado — pero nadie tiene el dato de AG ni el canal Distun <a href="#fuentes" style="color:var(--blue)">³</a></span><span class="lang-en">The model is proven and funded — but no one has AG's data or the Distun channel <a href="#fuentes" style="color:var(--blue)">³</a></span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="pad" style="padding-top:0">
+  <div class="wrap">
+    <div class="cta-band">
+      <h2><span class="lang-es">Ve el producto en acción.</span><span class="lang-en">See the product in action.</span></h2>
+      <p><span class="lang-es">Un prototipo clickeable del crédito incrustado en el flujo de Distun — desde el pedido hasta la aprobación en segundos.</span><span class="lang-en">A clickable prototype of embedded credit inside the Distun flow — from order to approval in seconds.</span></p>
+      <a class="btn amber" href="app/"><span class="lang-es">Abrir la demo →</span><span class="lang-en">Open the demo →</span></a>
+      &nbsp;
+      <a class="btn ghost" style="color:#fff;border-color:rgba(255,255,255,.4)" href="deck/"><span class="lang-es">Ver el pitch</span><span class="lang-en">View the pitch</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div class="brand"><span class="mark"></span> Crédito&nbsp;Distun</div>
+      <div class="badge">🏗️ <span class="lang-es">Una empresa de InnovArise · Grupo AG</span><span class="lang-en">An InnovArise venture · Grupo AG</span></div>
+    </div>
+    <p class="disc" id="fuentes"><span class="lang-es"><b>Fuentes:</b> ¹ Statista, Pagos digitales Guatemala, 2025. ² Superintendencia de Bancos de Guatemala; Ley de Contratos de Factoraje y Descuento, Decreto 1-2018; Art. 42 Decreto 19-2002. ³ Slope (BusinessWire 2024, ~$252M); R2 (LatamList 2024); Tul (BusinessWire 2022, $181M Serie B). Prototipo y cifras para evaluación interna del IC — no es una oferta de crédito. Las cifras de mercado están citadas; los supuestos de unit economics están etiquetados como tales.</span><span class="lang-en"><b>Sources:</b> ¹ Statista, Guatemala digital payments, 2025. ² Superintendencia de Bancos de Guatemala; Factoring Contracts Law, Decreto 1-2018; Art. 42 Decreto 19-2002. ³ Slope (BusinessWire 2024, ~$252M); R2 (LatamList 2024); Tul (BusinessWire 2022, $181M Series B). Prototype and figures for internal IC evaluation — not a credit offer. Market figures are cited; unit-economics assumptions are tagged as such.</span></p>
+  </div>
+</footer>
+
+<script>
+  function setLang(l){
+    document.body.classList.toggle('en', l==='en');
+    document.documentElement.lang = l;
+    document.getElementById('es').classList.toggle('active', l==='es');
+    document.getElementById('en').classList.toggle('active', l==='en');
+    try{localStorage.setItem('cd_lang',l)}catch(e){}
+  }
+  try{var s=localStorage.getItem('cd_lang'); if(s==='en') setLang('en');}catch(e){}
+</script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crédito Distun — Pitch (Seed)</title>
+<meta name="description" content="Seed pitch deck — Crédito Distun, embedded credit for ferreterías and contractors underwritten on Grupo AG / Distun purchase history.">
+<style>
+  :root{
+    --ink:#15233B; --ink-2:#2B3A52; --paper:#FAF7F2; --paper-2:#F1EBE0; --white:#fff;
+    --blue:#1F5FE0; --blue-d:#1842B8; --amber:#F4A300; --green:#1E9E6A; --red:#D8492B; --line:#E4DCCE;
+    --muted:#5C6675; --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);background:#0c1422;color:var(--ink);-webkit-font-smoothing:antialiased}
+  .lang-en{display:none}
+  body.en .lang-es{display:none}
+  body.en .lang-en{display:inline}
+  body.en .b-es{display:none}.b-en{display:none}body.en .b-en{display:block}body:not(.en) .b-es{display:block}
+
+  .stage{height:100vh;display:flex;align-items:center;justify-content:center;padding:30px}
+  .slide{width:100%;max-width:1000px;aspect-ratio:16/9;background:var(--paper);border-radius:18px;box-shadow:0 24px 80px rgba(0,0,0,.5);position:relative;overflow:hidden;display:none;flex-direction:column}
+  .slide.active{display:flex}
+  .slide .pad{padding:54px 60px;flex:1;display:flex;flex-direction:column;justify-content:center}
+  @media(max-width:720px){.slide .pad{padding:30px 28px}}
+  .kick{color:var(--amber);font-weight:800;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px}
+  h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.08;letter-spacing:-.025em;font-weight:800}
+  h2{font-size:clamp(1.5rem,3.6vw,2.4rem);line-height:1.12;letter-spacing:-.02em;font-weight:800;margin-bottom:18px}
+  p{color:var(--ink-2);font-size:clamp(.95rem,1.7vw,1.12rem);line-height:1.55}
+  .big{font-size:clamp(1.1rem,2.2vw,1.45rem);color:var(--ink)}
+  .mark{width:34px;height:34px;border-radius:9px;background:var(--ink);position:relative;display:inline-block;vertical-align:middle}
+  .mark::before{content:"";position:absolute;left:50%;top:6px;transform:translateX(-50%);width:2px;height:14px;background:var(--amber)}
+  .mark::after{content:"";position:absolute;left:50%;top:20px;transform:translateX(-50%);width:10px;height:10px;background:var(--amber);clip-path:polygon(50% 100%,0 0,100% 0)}
+  .muted{color:var(--muted)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  ul{list-style:none;display:grid;gap:11px;margin-top:6px}
+  li{display:flex;gap:11px;align-items:flex-start;font-size:clamp(.92rem,1.6vw,1.08rem);color:var(--ink-2)}
+  li .d{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-size:.7rem;margin-top:3px}
+  .card{background:var(--white);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card .n{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:800;color:var(--blue);letter-spacing:-.02em;line-height:1}
+  .card .l{font-size:.84rem;color:var(--muted);margin-top:7px}
+  .dark{background:var(--ink)}
+  .dark h1,.dark h2,.dark .big{color:#fff}
+  .dark p{color:rgba(255,255,255,.8)}
+  .dark .kick{color:var(--amber)}
+  .pill{display:inline-block;background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:.82rem;font-weight:600;color:var(--ink-2)}
+  .tag-amber{background:var(--amber);color:var(--ink);font-weight:800;border-radius:999px;padding:5px 13px;font-size:.78rem;display:inline-block}
+  table{width:100%;border-collapse:collapse;font-size:clamp(.82rem,1.5vw,1rem)}
+  td,th{text-align:left;padding:9px 8px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+  td b{color:var(--ink)}
+  .src{font-size:.72rem;color:var(--muted);margin-top:auto;padding-top:14px}
+
+  /* footer controls */
+  .ctl{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:40;display:flex;align-items:center;gap:14px;background:rgba(12,20,34,.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.12);border-radius:999px;padding:8px 14px}
+  .ctl button{border:0;background:rgba(255,255,255,.12);color:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1rem}
+  .ctl button:hover{background:rgba(255,255,255,.25)}
+  .ctl .count{color:#fff;font-size:.85rem;font-weight:700;min-width:54px;text-align:center}
+  .toggle{display:inline-flex;border:1px solid rgba(255,255,255,.2);border-radius:999px;overflow:hidden}
+  .toggle button{width:auto;border-radius:0;padding:0 11px;height:30px;font-size:.74rem;font-weight:700;background:transparent;color:rgba(255,255,255,.7)}
+  .toggle button.active{background:#fff;color:var(--ink)}
+  .home{position:fixed;top:18px;left:22px;z-index:40;color:rgba(255,255,255,.8);font-size:.84rem;text-decoration:none;background:rgba(12,20,34,.6);padding:7px 14px;border-radius:999px;border:1px solid rgba(255,255,255,.12)}
+  .pg{position:absolute;bottom:16px;right:22px;font-size:.72rem;color:var(--muted);font-weight:700}
+  .dark .pg{color:rgba(255,255,255,.4)}
+</style>
+</head>
+<body>
+<a class="home" href="../">← <span class="lang-es">Inicio</span><span class="lang-en">Home</span></a>
+<div class="stage">
+
+  <!-- 1 TITLE -->
+  <section class="slide active dark">
+    <div class="pad">
+      <div style="margin-bottom:26px"><span class="mark"></span></div>
+      <h1>Crédito Distun</h1>
+      <p class="big" style="margin-top:18px;max-width:30ch"><span class="lang-es">Compra hoy, paga cuando cobras. Crédito de materiales incrustado en el canal de Grupo AG.</span><span class="lang-en">Buy today, pay when you get paid. Materials credit embedded in Grupo AG's channel.</span></p>
+      <div style="margin-top:30px"><span class="pill" style="background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.2)">Seed · InnovArise × Grupo AG · 2026</span></div>
+    </div>
+    <div class="pg">01</div>
+  </section>
+
+  <!-- 2 PROBLEM -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kick"><span class="lang-es">El problema</span><span class="lang-en">The problem</span></div>
+      <h2><span class="lang-es">El trabajo más caro del canal: financiar el tiempo entre comprar y cobrar.</span><span class="lang-en">The channel's most expensive job: financing the gap between buying and getting paid.</span></h2>
+      <div class="grid3" style="margin-top:14px">
+        <div class="card"><div class="n">🏦</div><p style="margin-top:8px"><span class="lang-es"><b>Los bancos no prestan</b> a ferreterías y contratistas sin buró — son "thin-file".</span><span class="lang-en"><b>Banks won't lend</b> to thin-file ferreterías and contractors — no bureau record.</span></p></div>
+        <div class="card"><div class="n">🤝</div><p style="margin-top:8px"><span class="lang-es"><b>El distribuidor da crédito "al ojo"</b> — limita el pedido y amarra su propio balance.</span><span class="lang-en"><b>The distributor lends by gut feel</b> — caps order size and ties up its own balance sheet.</span></p></div>
+        <div class="card"><div class="n">📉</div><p style="margin-top:8px"><span class="lang-es"><b>La dependencia del efectivo</b> frena el crecimiento del comprador y el ticket de AG.</span><span class="lang-en"><b>Cash dependency</b> throttles the buyer's growth and AG's basket size.</span></p></div>
+      </div>
+    </div>
+    <div class="pg">02</div>
+  </section>
+
+  <!-- 3 SOLUTION -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kick"><span class="lang-es">La solución</span><span class="lang-en">The solution</span></div>
+      <h2><span class="lang-es">Crédito de un toque, dentro del pedido de Distun.</span><span class="lang-en">One-tap credit, inside the Distun order.</span></h2>
+      <div class="grid2">
+        <div>
+          <ul>
+            <li><span class="d">✓</span><span><span class="lang-es"><b>Net-30 sin costo</b> o net-60/90 por tarifa fija — al momento de pedir.</span><span class="lang-en"><b>Net-30 free</b> or net-60/90 for a flat fee — at the moment of ordering.</span></span></li>
+            <li><span class="d">✓</span><span><span class="lang-es"><b>Evaluado con el historial de compras de AG</b>, no un buró.</span><span class="lang-en"><b>Underwritten on AG's purchase history</b>, not a bureau file.</span></span></li>
+            <li><span class="d">✓</span><span><span class="lang-es"><b>Liviano en balance:</b> originar y vender/securitizar (factoraje codificado).</span><span class="lang-en"><b>Balance-sheet-light:</b> originate then sell/securitize (factoring is codified).</span></span></li>
+            <li><span class="d">✓</span><span><span class="lang-es">Después: wallet + tarjeta.</span><span class="lang-en">Later: wallet + card.</span></span></li>
+          </ul>
+        </div>
+        <div class="card" style="background:var(--ink);color:#fff">
+          <div class="tag-amber"><span class="lang-es">En el mostrador</span><span class="lang-en">At the counter</span></div>
+          <p style="color:#fff;font-size:1.3rem;font-weight:800;margin:14px 0 6px;letter-spacing:-.02em"><span class="lang-es">"Tu línea: Q 32,000. ¿Net-30 sin costo, o net-60?"</span><span class="lang-en">"Your line: Q 32,000. Net-30 free, or net-60?"</span></p>
+          <p style="color:rgba(255,255,255,.7)"><span class="lang-es">Un toque. El pedido sale. Pagas cuando cobras.</span><span class="lang-en">One tap. The order ships. Pay when you get paid.</span></p>
+        </div>
+      </div>
+    </div>
+    <div class="pg">03</div>
+  </section>
+
+  <!-- 4 MOAT -->
+  <section class="slide dark">
+    <div class="pad">
+      <div class="kick"><span class="lang-es">La ventaja (el foso)</span><span class="lang-en">The advantage (the moat)</span></div>
+      <h2><span class="lang-es">El historial de compras <span style="color:var(--amber)">es</span> el modelo de crédito.</span><span class="lang-en">Purchase history <span style="color:var(--amber)">is</span> the credit model.</span></h2>
+      <div class="grid3">
+        <div class="card" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)"><div style="color:#fff;font-weight:800;font-size:1.05rem"><span class="lang-es">Dato propietario</span><span class="lang-en">Proprietary data</span></div><p style="color:rgba(255,255,255,.75);margin-top:6px;font-size:.95rem"><span class="lang-es">Años de comportamiento de compra que ningún prestamista horizontal puede ver.</span><span class="lang-en">Years of buying behavior no horizontal lender can see.</span></p></div>
+        <div class="card" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)"><div style="color:#fff;font-weight:800;font-size:1.05rem"><span class="lang-es">Canal cautivo</span><span class="lang-en">Captive channel</span></div><p style="color:rgba(255,255,255,.75);margin-top:6px;font-size:.95rem"><span class="lang-es">AG ya da crédito informal: libro de préstamos y CAC ≈ $0 desde el día uno.</span><span class="lang-en">AG already extends terms: a loan book and ~$0 CAC on day one.</span></p></div>
+        <div class="card" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)"><div style="color:#fff;font-weight:800;font-size:1.05rem"><span class="lang-es">Transferible</span><span class="lang-en">Transferable</span></div><p style="color:rgba(255,255,255,.75);margin-top:6px;font-size:.95rem"><span class="lang-es">El rail de crédito para cualquier distribuidor — AG es ancla, no el único.</span><span class="lang-en">The credit rail for any distributor — AG is anchor, not the only one.</span></p></div>
+      </div>
+      <p style="margin-top:18px;color:rgba(255,255,255,.7)"><span class="lang-es">La defensibilidad vive en el dato + el canal, no en el mecanismo de préstamo.</span><span class="lang-en">Defensibility lives in the data + channel, not the lending mechanic.</span></p>
+    </div>
+    <div class="pg">04</div>
+  </section>
+
+  <!-- 5 WHY NOW -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kick"><span class="lang-es">Por qué ahora</span><span class="lang-en">Why now</span></div>
+      <h2><span class="lang-es">El regulador es una ventaja, no un obstáculo.</span><span class="lang-en">The regulator is an advantage, not an obstacle.</span></h2>
+      <div class="grid2">
+        <ul>
+          <li><span class="d">✓</span><span><span class="lang-es"><b>Sin licencia SIB</b> para prestar capital propio/warehouse — lo reservado es captar depósitos.</span><span class="lang-en"><b>No SIB license</b> to lend own/warehouse capital — only deposit-taking is reserved.</span></span></li>
+          <li><span class="d">✓</span><span><span class="lang-es"><b>Factoraje codificado</b> (Decreto 1-2018) — el modelo originar-y-vender es legal.</span><span class="lang-en"><b>Factoring codified</b> (Decreto 1-2018) — the originate-and-sell model is legal.</span></span></li>
+          <li><span class="d">✓</span><span><span class="lang-es"><b>Tasas comerciales libres</b> — sin techo de usura (Art. 42, Decreto 19-2002).</span><span class="lang-en"><b>Commercial rates uncapped</b> — no usury ceiling (Art. 42, Decreto 19-2002).</span></span></li>
+        </ul>
+        <div class="grid2" style="grid-template-columns:1fr 1fr;align-content:start">
+          <div class="card"><div class="n">$12.7B</div><div class="l"><span class="lang-es">Pagos digitales GT, 2025</span><span class="lang-en">GT digital payments, 2025</span></div></div>
+          <div class="card"><div class="n">+416%</div><div class="l"><span class="lang-es">Fintechs GT en 5 años</span><span class="lang-en">GT fintechs in 5 yrs</span></div></div>
+        </div>
+      </div>
+      <p style="margin-top:16px;font-size:.95rem"><span class="lang-es">Ventana que se cierra: construir el libro y el foso de datos <b>antes</b> de que el perímetro regulatorio se amplíe.</span><span class="lang-en">A closing window: build the book and data moat <b>before</b> the regulatory perimeter expands.</span></p>
+    </div>
+    <div class="pg">05</div>
+  </section>
+
+  <!-- 6 MARKET -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kick"><span class="lang-es">Mercado (bottom-up)</span><span class="lang-en">Market (bottom-up)</span></div>
+      <h2><span class="lang-es">La cuña es pequeña. El mercado que abre, no.</span><span class="lang-en">The wedge is small. The market it opens isn't.</span></h2>
+      <div class="grid3">
+        <div class="card"><div class="l" style="margin:0 0 4px"><span class="lang-es">CUÑA · Guatemala</span><span class="lang-en">WEDGE · Guatemala</span></div><div class="n">~$48M</div><div class="l"><span class="lang-es">originado/año → ~$2.7M ingreso neto. Prueba del modelo de crédito.</span><span class="lang-en">originated/yr → ~$2.7M net rev. Proof of the credit model.</span></div></div>
+        <div class="card"><div class="l" style="margin:0 0 4px"><span class="lang-es">EXPANSIÓN · LatAm</span><span class="lang-en">EXPANSION · LatAm</span></div><div class="n">~$120B</div><div class="l"><span class="lang-es">canal ferretero regional (~600k tiendas).</span><span class="lang-en">regional hardware channel (~600k stores).</span></div></div>
+        <div class="card"><div class="l" style="margin:0 0 4px"><span class="lang-es">POOL DE INGRESO</span><span class="lang-en">REVENUE POOL</span></div><div class="n">~$3.9B</div><div class="l"><span class="lang-es">/año a escala. 3-5% = $120-200M ingreso.</span><span class="lang-en">/yr at scale. 3-5% = $120-200M revenue.</span></div></div>
+      </div>
+      <p style="margin-top:16px;font-size:.98rem"><span class="lang-es"><b>Tres vectores que componen:</b> contratistas (10-20× las tiendas) · geografía (GT → MX → Andina) · wallet + tarjeta (crédito → pagos).</span><span class="lang-en"><b>Three compounding vectors:</b> contractors (10-20× the stores) · geography (GT → MX → Andean) · wallet + card (credit → payments).</span></p>
+      <div class="src"><span class="lang-es">Conteos por fuente (ferreterías GT ~800, observado); canal $120B (Tul/BusinessWire 2022, auto-reportado); supuestos de volumen por cliente etiquetados — a calibrar contra el ledger de Distun.</span><span class="lang-en">Counts sourced (GT ferreterías ~800, observed); $120B channel (Tul/BusinessWire 2022, self-reported); per-customer volume assumptions tagged — to calibrate against Distun's ledger.</span></div>
+    </div>
+    <div class="pg">06</div>
+  </section>
+
+  <!-- 7 BUSINESS MODEL -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kick"><span class="lang-es">Modelo de negocio</span><span class="lang-en">Business model</span></div>
+      <h2><span class="lang-es">Dos lados pagan. Una decisión simple.</span><span class="lang-en">Two sides pay. One simple choice.</span></h2>
+      <div class="grid2">
+        <div class="card" style="border-color:var(--amber);border-width:2px">
+          <div class="tag-amber">Net-30 · <span class="lang-es">más usado</span><span class="lang-en">most used</span></div>
+          <p style="font-size:1.8rem;font-weight:800;margin:10px 0 2px;color:var(--ink)">0% <span style="font-size:.9rem;color:var(--muted);font-weight:600"><span class="lang-es">al comprador</span><span class="lang-en">to buyer</span></span></p>
+          <p style="font-size:.95rem"><span class="lang-es">Financiado por el comercio — <b>2% MDR</b> de Distun. Adopción + ticket más grande.</span><span class="lang-en">Merchant-funded — <b>2% MDR</b> from Distun. Adoption + bigger basket.</span></p>
+        </div>
+        <div class="card">
+          <div class="pill">Net-60 / Net-90</div>
+          <p style="font-size:1.8rem;font-weight:800;margin:10px 0 2px;color:var(--ink)">3.5–6% <span style="font-size:.9rem;color:var(--muted);font-weight:600"><span class="lang-es">tarifa fija</span><span class="lang-en">flat fee</span></span></p>
+          <p style="font-size:.95rem"><span class="lang-es">Pagado por el comprador, "respaldado por la obra". Por debajo de la tasa informal/tarjeta.</span><span class="lang-en">Buyer-paid, "underwritten by the job". Below informal/card rates.</span></p>
+        </div>
+      </div>
+      <p style="margin-top:16px;font-size:.95rem"><span class="lang-es"><b>Take blended ~2.5-3.5%</b> del GMV financiado + (futuro) licenciar el motor de underwriting a otros distribuidores.</span><span class="lang-en"><b>Blended take ~2.5-3.5%</b> of financed GMV + (future) license the underwriting engine to other distributors.</span></p>
+    </div>
+    <div class="pg">07</div>
+  </section>
+
+  <!-- 8 UNIT ECONOMICS -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kick"><span class="lang-es">Unit economics</span><span class="lang-en">Unit economics</span></div>
+      <h2><span class="lang-es">Sano — si la pérdida se queda cerca del crédito comercial garantizado.</span><span class="lang-en">Healthy — if loss stays near secured trade credit.</span></h2>
+      <div class="grid2">
+        <table>
+          <tr><th><span class="lang-es">Por préstamo (Q5K, net-60)</span><span class="lang-en">Per loan ($5K, net-60)</span></th><th></th></tr>
+          <tr><td><span class="lang-es">Tarifa bruta (3.0%)</span><span class="lang-en">Gross fee (3.0%)</span></td><td><b>$150</b></td></tr>
+          <tr><td><span class="lang-es">− Costo de capital (~14%)</span><span class="lang-en">− Cost of capital (~14%)</span></td><td>−$73</td></tr>
+          <tr><td><span class="lang-es">− Pérdida esperada (0.6%/ciclo)</span><span class="lang-en">− Expected loss (0.6%/cycle)</span></td><td>−$30</td></tr>
+          <tr><td><span class="lang-es">− Servicio/ops</span><span class="lang-en">− Servicing/ops</span></td><td>−$15</td></tr>
+          <tr><td><b><span class="lang-es">Contribución</span><span class="lang-en">Contribution</span></b></td><td><b style="color:var(--green)">~$32 (64%)</b></td></tr>
+        </table>
+        <div>
+          <div class="card"><div class="n">~9-11%</div><div class="l"><span class="lang-es">Margen neto de interés y comisión sobre capital desplegado/año (recicla ~6×/año)</span><span class="lang-en">Net interest-and-fee margin on deployed capital/yr (recycles ~6×/yr)</span></div></div>
+          <p style="margin-top:14px;font-size:.92rem;color:var(--red)"><span class="lang-es"><b>Sensibilidad:</b> si la pérdida pasa de 0.6% → 2.0%/ciclo, la contribución se reduce a la mitad. Por eso el foso de datos debe mantener la pérdida baja.</span><span class="lang-en"><b>Sensitivity:</b> if loss moves 0.6% → 2.0%/cycle, contribution halves. This is why the data moat must keep loss low.</span></p>
+        </div>
+      </div>
+      <div class="src"><span class="lang-es">Comparables: Marco ($254M financiado, ~0 pérdida, garantizado); Mercado Crédito (~6.8% NPL, no garantizado). Supuestos etiquetados.</span><span class="lang-en">Comps: Marco ($254M financed, ~0 loss, secured); Mercado Crédito (~6.8% NPL, unsecured). Assumptions tagged.</span></div>
+    </div>
+    <div class="pg">08</div>
+  </section>
+
+  <!-- 9 COMPETITION / NOVELTY -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kick"><span class="lang-es">Competencia y novedad</span><span class="lang-en">Competition & novelty</span></div>
+      <h2><span class="lang-es">El modelo está probado. El foso, sin dueño.</span><span class="lang-en">The model is proven. The moat is unowned.</span></h2>
+      <table>
+        <tr><th><span class="lang-es">Análogo</span><span class="lang-en">Analog</span></th><th><span class="lang-es">Etapa / capital</span><span class="lang-en">Stage / capital</span></th><th><span class="lang-es">Solapamiento</span><span class="lang-en">Overlap</span></th></tr>
+        <tr><td><b>Slope</b> (US)</td><td>~Series B · ~$252M</td><td><span class="lang-es">Mecanismo sí; LatAm/canal/dato no</span><span class="lang-en">Mechanism yes; LatAm/channel/data no</span></td></tr>
+        <tr><td><b>R2</b> (MX/CO/CL)</td><td>Series A+ · ~$180M</td><td><span class="lang-es">Horizontal; renta el dato, no lo posee</span><span class="lang-en">Horizontal; rents data, doesn't own it</span></td></tr>
+        <tr><td><b>Tul</b> (CO/MX)</td><td>Series B · ~$190M</td><td><span class="lang-es">Mismo cliente, pero desintermedia al distribuidor</span><span class="lang-en">Same customer, but disintermediates the distributor</span></td></tr>
+      </table>
+      <p style="margin-top:16px"><span class="tag-amber"><span class="lang-es">Novedad: MIXTA → POSITIVA</span><span class="lang-en">Novelty: MIXED → POSITIVE</span></span> <span style="font-size:.96rem;color:var(--ink-2)"> &nbsp;<span class="lang-es">Nadie financiado posee el dato de AG + el canal Distun + el espacio en blanco de Centroamérica.</span><span class="lang-en">No funded player owns AG's data + the Distun channel + Central-America whitespace.</span></span></p>
+    </div>
+    <div class="pg">09</div>
+  </section>
+
+  <!-- 10 GTM -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kick">GTM</div>
+      <h2><span class="lang-es">Liderado por canal, no por marketing.</span><span class="lang-en">Channel-led, not marketing-led.</span></h2>
+      <div class="grid3">
+        <div class="card"><div class="n">1</div><div style="font-weight:800;margin:6px 0"><span class="lang-es">Tablet del vendedor</span><span class="lang-en">Sales-rep tablet</span></div><p style="font-size:.92rem"><span class="lang-es">Los vendedores de Distun ya visitan ferreterías. Un toque "pagar después". Sin descargar app.</span><span class="lang-en">Distun reps already visit stores. A one-tap "pay later". No app to download.</span></p></div>
+        <div class="card"><div class="n">2</div><div style="font-weight:800;margin:6px 0"><span class="lang-es">Mostrador / POS</span><span class="lang-en">Counter / POS</span></div><p style="font-size:.92rem"><span class="lang-es">Para el contratista que llega: términos al checkout, límite ya calculado.</span><span class="lang-en">For the walk-in contractor: terms at checkout, limit already computed.</span></p></div>
+        <div class="card"><div class="n">3</div><div style="font-weight:800;margin:6px 0"><span class="lang-es">App (después)</span><span class="lang-en">App (later)</span></div><p style="font-size:.92rem"><span class="lang-es">Para recompradores: límite, vencimientos, re-pedido. Solo tras probar el repago.</span><span class="lang-en">For repeat borrowers: limit, due dates, re-order. Only after repayment proves out.</span></p></div>
+      </div>
+      <p style="margin-top:16px;font-size:.98rem"><span class="lang-es"><b>Arranque en frío resuelto:</b> el primer libro de préstamos es la base de clientes con términos que AG <i>ya</i> tiene — pre-evaluados con su propio historial.</span><span class="lang-en"><b>Cold-start solved:</b> the first loan book is AG's <i>existing</i> terms customers — pre-scored on their own history.</span></p>
+    </div>
+    <div class="pg">10</div>
+  </section>
+
+  <!-- 11 CAPITAL STRUCTURE -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kick"><span class="lang-es">Estructura de capital</span><span class="lang-en">Capital structure</span></div>
+      <h2><span class="lang-es">El equity financia la empresa. La deuda financia el libro.</span><span class="lang-en">Equity funds the company. Debt funds the book.</span></h2>
+      <div class="grid2">
+        <div class="card" style="background:var(--ink);color:#fff"><div style="font-weight:800;color:#fff"><span class="lang-es">Warehouse de deuda</span><span class="lang-en">Debt warehouse</span></div><p style="color:rgba(255,255,255,.8);margin-top:6px"><span class="lang-es">Origina las cuentas por cobrar (luego se venden/securitizan). <b style="color:#fff">$10-15M</b> para la cuña GT; $80-150M+ regional. <b style="color:var(--amber)">AG es el ancla natural del primer warehouse.</b></span><span class="lang-en">Originates receivables (then sold/securitized). <b style="color:#fff">$10-15M</b> for the GT wedge; $80-150M+ regional. <b style="color:var(--amber)">AG is the natural anchor of the first warehouse.</b></span></p></div>
+        <div class="card"><div style="font-weight:800"><span class="lang-es">Equity</span><span class="lang-en">Equity</span></div><p style="margin-top:6px;font-size:.95rem"><span class="lang-es">Financia opex: equipo, tech, underwriting, GTM, licencias. Originar-y-distribuir mantiene el balance liviano — la empresa gana spread + servicio.</span><span class="lang-en">Funds opex: team, tech, underwriting, GTM, licensing. Originate-to-distribute keeps the balance sheet light — the company earns spread + servicing.</span></p></div>
+      </div>
+      <p style="margin-top:14px;font-size:.92rem;color:var(--red)"><span class="lang-es"><b>Honestidad:</b> el Seed estándar (~$1M) sub-capitaliza un negocio de préstamo. Emparejarlo con un Seed+ y el warehouse anclado por AG.</span><span class="lang-en"><b>Honesty:</b> the standard ~$1M Seed under-capitalizes a lending business. Pair it with a Seed+ and the AG-anchored warehouse.</span></p>
+    </div>
+    <div class="pg">11</div>
+  </section>
+
+  <!-- 12 THE ASK / CAP TABLE -->
+  <section class="slide dark">
+    <div class="pad">
+      <div class="kick"><span class="lang-es">El ask</span><span class="lang-en">The ask</span></div>
+      <h2><span class="lang-es">Lanzar + capital inicial por el 35% de la casa.</span><span class="lang-en">Launch + initial capital for the 35% house stake.</span></h2>
+      <div class="grid2">
+        <table style="color:#fff">
+          <tr><th style="color:rgba(255,255,255,.6)"><span class="lang-es">Cap table a la formación</span><span class="lang-en">Cap table at formation</span></th><th style="color:rgba(255,255,255,.6)">%FDE</th></tr>
+          <tr style="border-color:rgba(255,255,255,.12)"><td>InnovArise (studio)</td><td><b style="color:var(--amber)">35%</b></td></tr>
+          <tr style="border-color:rgba(255,255,255,.12)"><td><span class="lang-es">CEO fundador</span><span class="lang-en">Founding CEO</span></td><td>~35%</td></tr>
+          <tr style="border-color:rgba(255,255,255,.12)"><td>CTO / co-founder</td><td>~20%</td></tr>
+          <tr style="border-color:rgba(255,255,255,.12)"><td>ESOP</td><td>10%</td></tr>
+        </table>
+        <ul>
+          <li><span class="d">✓</span><span style="color:rgba(255,255,255,.9)"><span class="lang-es"><b style="color:#fff">~$500K</b> inversión inicial (SAFE post-money) por 35% FDE.</span><span class="lang-en"><b style="color:#fff">~$500K</b> initial investment (post-money SAFE) for 35% FDE.</span></span></li>
+          <li><span class="d">✓</span><span style="color:rgba(255,255,255,.9)"><span class="lang-es">Seed ~12 meses después diluye el studio a ~27%.</span><span class="lang-en">Seed ~12 months later dilutes the studio to ~27%.</span></span></li>
+          <li><span class="d">✓</span><span style="color:rgba(255,255,255,.9)"><span class="lang-es">Suscrito a <b style="color:#fff">5× MOIC</b> de la operación; cartera 3× neto.</span><span class="lang-en">Underwritten to <b style="color:#fff">5× deal MOIC</b>; portfolio 3× net.</span></span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pg">12</div>
+  </section>
+
+  <!-- 13 THE CRUX -->
+  <section class="slide">
+    <div class="pad">
+      <div class="kick"><span class="lang-es">El crux · decisión del IC</span><span class="lang-en">The crux · IC decision</span></div>
+      <h2><span class="lang-es">Una pregunta decide todo — y la prueba es casi gratis.</span><span class="lang-en">One question decides everything — and the test is nearly free.</span></h2>
+      <p class="big" style="margin-bottom:14px"><span class="lang-es">¿El historial de compras de AG predice el <b>repago</b>? (pérdida ~0.6%/ciclo garantizado vs ~2% no garantizado)</span><span class="lang-en">Does AG's purchase history predict <b>repayment</b>? (~0.6%/cycle secured vs ~2% unsecured)</span></p>
+      <div class="card" style="border-color:var(--green);border-width:2px;background:rgba(30,158,106,.05)">
+        <div style="font-weight:800;color:var(--green)"><span class="lang-es">El experimento más barato (~$0-5K, sin código ni licencia)</span><span class="lang-en">The cheapest experiment (~$0-5K, no code or license)</span></div>
+        <p style="margin-top:8px;font-size:1rem"><span class="lang-es"><b>Re-evaluar el ledger histórico de cuentas por cobrar de AG/Distun</b> (24-36 meses): de los clientes que <i>hubiéramos</i> aprobado, ¿qué % pagó tarde o cayó en mora? Una curva de pérdida real, de una solicitud de data-room + una semana de analista.</span><span class="lang-en"><b>Retro-underwrite AG/Distun's historical receivables ledger</b> (24-36 mo): of the customers we <i>would</i> have approved, what % paid late or defaulted? A real loss curve, from a data-room request + an analyst-week.</span></p>
+        <p style="margin-top:10px;font-size:.92rem;color:var(--ink-2)"><span class="lang-es"><b>&lt;1%/ciclo →</b> luz verde &nbsp;·&nbsp; <b>1-2% →</b> reformar (garantizado) &nbsp;·&nbsp; <b>&gt;2% →</b> matar antes de gastar.</span><span class="lang-en"><b>&lt;1%/cycle →</b> green-light &nbsp;·&nbsp; <b>1-2% →</b> reshape (secured) &nbsp;·&nbsp; <b>&gt;2% →</b> kill before spending.</span></p>
+      </div>
+    </div>
+    <div class="pg">13</div>
+  </section>
+
+  <!-- 14 CLOSE -->
+  <section class="slide dark">
+    <div class="pad" style="align-items:flex-start">
+      <div style="margin-bottom:22px"><span class="mark"></span></div>
+      <h1><span class="lang-es">Compra hoy,<br>paga cuando cobras.</span><span class="lang-en">Buy today,<br>pay when you get paid.</span></h1>
+      <p class="big" style="margin-top:18px;max-width:40ch"><span class="lang-es">El foso de datos de AG convierte a clientes "thin-file" en clientes evaluables — y a Distun, en el rail de crédito del canal industrial de LatAm.</span><span class="lang-en">AG's data moat turns thin-file customers into scoreable ones — and Distun into the credit rail for LatAm's industrial channel.</span></p>
+      <div style="margin-top:26px;display:flex;gap:12px;flex-wrap:wrap">
+        <a href="../" class="pill" style="background:#fff;color:var(--ink);border:0"><span class="lang-es">Landing</span><span class="lang-en">Landing</span></a>
+        <a href="../app/" class="pill" style="background:var(--amber);color:var(--ink);border:0"><span class="lang-es">Demo del producto →</span><span class="lang-en">Product demo →</span></a>
+      </div>
+    </div>
+    <div class="pg">14</div>
+  </section>
+
+</div>
+
+<div class="ctl">
+  <div class="toggle"><button id="es" class="active" onclick="setLang('es')">ES</button><button id="en" onclick="setLang('en')">EN</button></div>
+  <button onclick="go(-1)">‹</button>
+  <div class="count"><span id="cur">1</span> / <span id="tot">14</span></div>
+  <button onclick="go(1)">›</button>
+</div>
+
+<script>
+  let i=0; const slides=[...document.querySelectorAll('.slide')];
+  document.getElementById('tot').textContent=slides.length;
+  function show(n){i=Math.max(0,Math.min(slides.length-1,n));slides.forEach((s,k)=>s.classList.toggle('active',k===i));document.getElementById('cur').textContent=i+1;}
+  function go(d){show(i+d);}
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')go(1);if(e.key==='ArrowLeft')go(-1);});
+  function setLang(l){document.body.classList.toggle('en',l==='en');document.documentElement.lang=l;
+    document.getElementById('es').classList.toggle('active',l==='es');document.getElementById('en').classList.toggle('active',l==='en');
+    try{localStorage.setItem('cd_lang',l)}catch(e){}}
+  try{if(localStorage.getItem('cd_lang')==='en')setLang('en');}catch(e){}
+  // swipe
+  let x0=null;addEventListener('touchstart',e=>x0=e.touches[0].clientX);
+  addEventListener('touchend',e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50)go(dx<0?1:-1);x0=null;});
+</script>
+</body>
+</html>
