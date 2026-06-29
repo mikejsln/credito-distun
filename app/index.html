@@ -466,6 +466,7 @@ function pickTerm(d,f){term={d:d,fee:f};renderTerms();}
 /* ---------- decision (the moat) ---------- */
 function runDecision(){go('decision');}
 function renderDecision(){
+  if(orderTotal()===0)seedCart(); // direct-nav fallback so the decision reflects a real order
   const body=document.getElementById('decisionBody');const foot=document.getElementById('decisionFoot');const en=EN();
   body.innerHTML=`<div class="scan"><div class="spinner"></div><p>${en?'Analyzing Distun purchase history…':'Analizando historial de compras Distun…'}</p></div>`;
   foot.innerHTML='';
