@@ -14,6 +14,8 @@ All three ship with a Spanish⇄English toggle (default Spanish, LatAm-first).
 ## Venture record
 - [`venture/THESIS.md`](venture/THESIS.md) — thesis, advantage, scale, unit economics, capital structure.
 - [`venture/GATE-REVIEW.md`](venture/GATE-REVIEW.md) — Build gate verdict (AI Pass 1): **NEED-MORE-EVIDENCE**, with the cheapest experiment (retro-underwrite AG's receivables ledger) and the conditions to clear before Incubate.
+- [`venture/COMPETITOR-TEARDOWN.md`](venture/COMPETITOR-TEARDOWN.md) — product teardown of Slope/R2/Kontempo/Tul/Addi/Mercado Crédito, feature differentiation matrix, the defensible wedge, MVP scope.
+- [`venture/PRODUCT-DESIGN.md`](venture/PRODUCT-DESIGN.md) — personas, journey map, UI flow + screen states, and the narrated demo walkthrough behind `/app/`.
 
 ## The crux
 Does AG's proprietary purchase history predict **repayment** (loss near the secured trade-finance benchmark, not the unsecured-SME one)? The entire moat and unit economic live or die there — and the test is a data-room request + an analyst-week, before any code, license, or warehouse spend.

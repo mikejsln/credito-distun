@@ -4,272 +4,578 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Crédito Distun — Demo del producto</title>
-<meta name="description" content="Prototipo clickeable: crédito incrustado en el flujo de pedido de Distun, evaluado con historial de compras.">
+<meta name="description" content="Demo guiada y clickeable: crédito incrustado en el flujo de Distun, con underwriting explicable sobre el historial de compras.">
 <style>
   :root{
     --ink:#15233B; --ink-2:#2B3A52; --paper:#FAF7F2; --paper-2:#F1EBE0; --white:#fff;
     --blue:#1F5FE0; --blue-d:#1842B8; --amber:#F4A300; --green:#1E9E6A; --red:#D8492B; --line:#E4DCCE;
-    --muted:#5C6675; --radius:14px; --shadow:0 12px 40px rgba(21,35,59,.12); --shadow-sm:0 4px 16px rgba(21,35,59,.07);
+    --muted:#5C6675; --radius:14px; --shadow:0 12px 40px rgba(21,35,59,.12); --shadow-sm:0 3px 14px rgba(21,35,59,.07);
     --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-  .lang-en{display:none}
-  body.en .lang-es{display:none}
-  body.en .lang-en{display:inline}
+  body{font-family:var(--sans);background:#0c1422;color:var(--ink);-webkit-font-smoothing:antialiased;line-height:1.5}
   a{color:inherit;text-decoration:none}
+  .en .es{display:none}.en .enx{display:inline}.enx{display:none}
+  body:not(.en) .enx{display:none}
 
-  /* top bar */
-  .bar{position:sticky;top:0;z-index:30;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:12px 20px}
-  .bar .brand{display:flex;align-items:center;gap:10px;font-weight:800}
-  .mark{width:26px;height:26px;border-radius:7px;background:#fff;position:relative}
-  .mark::before{content:"";position:absolute;left:50%;top:5px;transform:translateX(-50%);width:2px;height:10px;background:var(--amber)}
-  .mark::after{content:"";position:absolute;left:50%;top:15px;transform:translateX(-50%);width:8px;height:8px;background:var(--amber);clip-path:polygon(50% 100%,0 0,100% 0)}
-  .bar .right{display:flex;align-items:center;gap:14px}
-  .bar .tag{font-size:.72rem;background:rgba(255,255,255,.14);padding:4px 10px;border-radius:999px}
+  /* top chrome */
+  .top{position:sticky;top:0;z-index:40;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:11px 18px;flex-wrap:wrap;gap:10px}
+  .top .brand{display:flex;align-items:center;gap:9px;font-weight:800}
+  .mk{width:25px;height:25px;border-radius:7px;background:#fff;position:relative}
+  .mk::before{content:"";position:absolute;left:50%;top:5px;transform:translateX(-50%);width:2px;height:9px;background:var(--amber)}
+  .mk::after{content:"";position:absolute;left:50%;top:14px;transform:translateX(-50%);width:8px;height:8px;background:var(--amber);clip-path:polygon(50% 100%,0 0,100% 0)}
+  .top .tag{font-size:.68rem;background:rgba(255,255,255,.14);padding:3px 9px;border-radius:999px}
+  .top .right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .top .right a, .top .right button{font-size:.8rem}
+  .tourbtn{background:var(--amber);color:var(--ink);border:0;font-weight:800;padding:7px 15px;border-radius:999px;cursor:pointer;font-size:.82rem}
   .toggle{display:inline-flex;border:1px solid rgba(255,255,255,.25);border-radius:999px;overflow:hidden}
-  .toggle button{border:0;background:transparent;padding:5px 11px;font-size:.76rem;font-weight:700;cursor:pointer;color:rgba(255,255,255,.7)}
+  .toggle button{border:0;background:transparent;padding:5px 11px;font-size:.74rem;font-weight:700;cursor:pointer;color:rgba(255,255,255,.7)}
   .toggle button.active{background:#fff;color:var(--ink)}
-  .bar a.home{font-size:.82rem;color:rgba(255,255,255,.75)}
+  .home{color:rgba(255,255,255,.7)}
 
-  .app{max-width:1080px;margin:0 auto;padding:22px 20px 60px;display:grid;grid-template-columns:1.15fr .85fr;gap:22px}
-  @media(max-width:880px){.app{grid-template-columns:1fr}}
+  /* layout: device + side */
+  .stage{max-width:1180px;margin:0 auto;padding:22px 18px 80px;display:grid;grid-template-columns:240px 1fr;gap:22px;align-items:start}
+  @media(max-width:900px){.stage{grid-template-columns:1fr}}
 
-  .panel{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden}
-  .panel .head{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
-  .panel .head h2{font-size:1.02rem;font-weight:800;letter-spacing:-.01em}
-  .panel .head .sub{font-size:.78rem;color:var(--muted)}
-  .panel .body{padding:18px}
+  /* left rail: screen nav */
+  .rail{background:#0f1a2c;border-radius:16px;padding:14px;position:sticky;top:78px}
+  .rail h4{color:rgba(255,255,255,.5);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;margin:6px 8px 10px}
+  .rail a{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;color:rgba(255,255,255,.78);font-size:.86rem;cursor:pointer;margin-bottom:2px}
+  .rail a:hover{background:rgba(255,255,255,.06);color:#fff}
+  .rail a.on{background:var(--blue);color:#fff;font-weight:700}
+  .rail a .num{width:20px;height:20px;border-radius:6px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:.7rem;font-weight:800;flex:0 0 auto}
+  .rail a.on .num{background:rgba(255,255,255,.25)}
+  .rail .scen{margin-top:14px;border-top:1px solid rgba(255,255,255,.1);padding-top:12px}
+  .rail .scen label{display:block;color:rgba(255,255,255,.5);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;margin:0 8px 7px}
+  .rail select{width:100%;background:#15233B;color:#fff;border:1px solid rgba(255,255,255,.16);border-radius:9px;padding:9px;font-size:.82rem}
 
-  /* customer card */
-  .cust{display:flex;gap:12px;align-items:center;padding:14px 18px;background:var(--paper-2);border-bottom:1px solid var(--line)}
-  .avatar{width:44px;height:44px;border-radius:11px;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.05rem}
-  .cust .nm{font-weight:800}
-  .cust .meta{font-size:.78rem;color:var(--muted)}
+  /* device frame */
+  .device-wrap{display:flex;justify-content:center}
+  .device{width:100%;max-width:720px;background:#0a1322;border-radius:26px;padding:14px;box-shadow:0 30px 70px rgba(0,0,0,.45)}
+  .screen{background:var(--paper);border-radius:16px;overflow:hidden;min-height:560px;display:flex;flex-direction:column}
+  .scr{display:none;flex-direction:column;flex:1}
+  .scr.active{display:flex}
 
-  /* catalog */
-  .item{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px dashed var(--line)}
-  .item:last-child{border-bottom:0}
-  .item .info{display:flex;gap:11px;align-items:center}
-  .item .sku{width:38px;height:38px;border-radius:9px;background:var(--paper-2);display:grid;place-items:center;font-size:1.1rem}
-  .item .t{font-weight:600;font-size:.92rem}
-  .item .p{font-size:.78rem;color:var(--muted)}
-  .qty{display:flex;align-items:center;gap:8px}
-  .qty button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:var(--white);font-size:1rem;font-weight:700;cursor:pointer;color:var(--ink)}
-  .qty span{min-width:22px;text-align:center;font-weight:700}
+  /* app header inside device */
+  .ah{background:var(--white);border-bottom:1px solid var(--line);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .ah .t{font-weight:800;font-size:1rem;letter-spacing:-.01em}
+  .ah .s{font-size:.74rem;color:var(--muted)}
+  .ah .back{font-size:.8rem;color:var(--blue);font-weight:700;cursor:pointer}
+  .ab{padding:16px;flex:1;overflow:auto}
 
-  .order-foot{padding:16px 18px;border-top:1px solid var(--line);background:var(--paper)}
-  .row{display:flex;justify-content:space-between;align-items:center;font-size:.9rem;margin-bottom:6px;color:var(--ink-2)}
-  .row.tot{font-size:1.25rem;font-weight:800;color:var(--ink);margin-top:8px}
-  .btn{display:block;width:100%;text-align:center;background:var(--blue);color:#fff;padding:14px;border-radius:12px;font-weight:800;font-size:1rem;border:0;cursor:pointer;margin-top:14px;transition:transform .12s,box-shadow .12s;box-shadow:0 6px 18px rgba(31,95,224,.28)}
-  .btn:hover{transform:translateY(-1px)}
-  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-  .btn.green{background:var(--green);box-shadow:0 6px 18px rgba(30,158,106,.28)}
+  .badge{font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:999px}
+  .badge.g{background:rgba(30,158,106,.13);color:var(--green)}
+  .badge.a{background:rgba(244,163,0,.16);color:#9a6b00}
+  .badge.r{background:rgba(216,73,43,.13);color:var(--red)}
+  .badge.n{background:var(--paper-2);color:var(--muted)}
+
+  /* route list */
+  .stop{display:flex;align-items:center;justify-content:space-between;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin-bottom:10px;cursor:pointer;transition:.12s}
+  .stop:hover{border-color:var(--blue);transform:translateY(-1px)}
+  .stop .l{display:flex;gap:11px;align-items:center}
+  .stop .ic{width:38px;height:38px;border-radius:10px;background:var(--paper-2);display:grid;place-items:center;font-size:1.1rem}
+  .stop .nm{font-weight:700;font-size:.93rem}
+  .stop .meta{font-size:.75rem;color:var(--muted)}
+
+  /* customer 360 */
+  .c360{display:flex;gap:13px;align-items:center;margin-bottom:14px}
+  .avatar{width:54px;height:54px;border-radius:13px;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.3rem}
+  .line-card{background:linear-gradient(135deg,var(--blue),var(--blue-d));color:#fff;border-radius:14px;padding:16px;margin-bottom:14px}
+  .line-card .lbl{font-size:.74rem;opacity:.85}
+  .line-card .big{font-size:1.9rem;font-weight:800;letter-spacing:-.02em;margin:2px 0 8px}
+  .ubar{height:8px;border-radius:5px;background:rgba(255,255,255,.25);overflow:hidden}
+  .ubar > i{display:block;height:100%;background:var(--amber)}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px}
+  .kpi{background:var(--white);border:1px solid var(--line);border-radius:11px;padding:11px}
+  .kpi .n{font-weight:800;font-size:1.05rem}
+  .kpi .l{font-size:.68rem;color:var(--muted);margin-top:2px}
+  .spark{display:flex;align-items:flex-end;gap:3px;height:36px;margin-top:6px}
+  .spark i{flex:1;background:var(--blue);border-radius:2px 2px 0 0;opacity:.85}
+
+  /* generic */
+  .btn{display:block;width:100%;text-align:center;background:var(--blue);color:#fff;padding:14px;border-radius:12px;font-weight:800;font-size:.98rem;border:0;cursor:pointer;transition:.12s;box-shadow:0 6px 16px rgba(31,95,224,.26)}
+  .btn:hover{transform:translateY(-1px)}.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+  .btn.green{background:var(--green);box-shadow:0 6px 16px rgba(30,158,106,.26)}
   .btn.ghost{background:var(--white);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+  .stickybar{padding:13px 16px;border-top:1px solid var(--line);background:var(--white)}
+  .row{display:flex;justify-content:space-between;align-items:center;font-size:.9rem;color:var(--ink-2);margin-bottom:5px}
+  .row.tot{font-size:1.2rem;font-weight:800;color:var(--ink);margin-top:6px}
 
-  /* right column: underwriting */
-  .uw .head{background:var(--ink);color:#fff;border-bottom:0}
-  .uw .head h2,.uw .head .sub{color:#fff}
-  .uw .head .sub{opacity:.7}
-  .uw-state{padding:22px 18px}
-  .scan{text-align:center;padding:20px 0}
-  .spinner{width:46px;height:46px;border-radius:50%;border:4px solid var(--paper-2);border-top-color:var(--blue);margin:0 auto 14px;animation:spin .8s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .signals{display:grid;gap:9px;margin-top:6px}
-  .sig{display:flex;justify-content:space-between;align-items:center;font-size:.85rem;padding:9px 12px;border-radius:10px;background:var(--paper);border:1px solid var(--line);opacity:0;transform:translateY(6px);animation:rise .4s forwards}
-  .sig b{font-weight:700}
-  .sig .v{font-weight:800;color:var(--green)}
-  .sig .v.warn{color:var(--amber)}
-  @keyframes rise{to{opacity:1;transform:none}}
+  /* cart */
+  .item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line)}
+  .item .info{display:flex;gap:10px;align-items:center}
+  .item .sku{width:36px;height:36px;border-radius:9px;background:var(--paper-2);display:grid;place-items:center;font-size:1.05rem}
+  .item .t{font-weight:600;font-size:.88rem}.item .p{font-size:.74rem;color:var(--muted)}
+  .qty{display:flex;align-items:center;gap:7px}
+  .qty button{width:27px;height:27px;border-radius:7px;border:1px solid var(--line);background:#fff;font-weight:700;cursor:pointer;color:var(--ink)}
+  .qty span{min-width:20px;text-align:center;font-weight:700}
+  .nudge{background:rgba(244,163,0,.1);border:1px solid rgba(244,163,0,.3);border-radius:10px;padding:9px 12px;font-size:.8rem;color:#8a5d00;margin:8px 0}
 
-  .decision{text-align:center;padding:8px 4px 0}
-  .score-ring{width:120px;height:120px;margin:0 auto 10px;border-radius:50%;background:conic-gradient(var(--green) var(--deg,0deg),var(--paper-2) 0);display:grid;place-items:center;transition:--deg 1s}
-  .score-inner{width:92px;height:92px;border-radius:50%;background:var(--white);display:grid;place-items:center;flex-direction:column}
-  .score-inner .num{font-size:1.9rem;font-weight:800;line-height:1}
-  .score-inner .lbl{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-  .verdict{font-weight:800;font-size:1.05rem;color:var(--green);margin:4px 0}
-  .limit{font-size:2.2rem;font-weight:800;letter-spacing:-.02em;margin:2px 0}
-  .limit-l{font-size:.78rem;color:var(--muted)}
+  /* pay method */
+  .paycard{border:2px solid var(--line);border-radius:13px;padding:15px;cursor:pointer;margin-bottom:11px;display:flex;justify-content:space-between;align-items:center;transition:.12s}
+  .paycard:hover{border-color:var(--blue)}
+  .paycard.sel{border-color:var(--green);background:rgba(30,158,106,.05)}
+  .paycard .t{font-weight:800}.paycard .s{font-size:.78rem;color:var(--muted)}
 
-  .terms{display:grid;gap:10px;margin-top:16px}
-  .term{border:1px solid var(--line);border-radius:12px;padding:13px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:.12s}
+  /* terms */
+  .term{border:1px solid var(--line);border-radius:12px;padding:13px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;margin-bottom:9px;transition:.12s}
   .term:hover{border-color:var(--blue)}
   .term.sel{border-color:var(--green);background:rgba(30,158,106,.06);box-shadow:inset 0 0 0 1px var(--green)}
-  .term .t{font-weight:800}
-  .term .s{font-size:.76rem;color:var(--muted)}
-  .term .fee{font-weight:800;font-size:.95rem}
-  .term .fee small{color:var(--muted);font-weight:600;font-size:.7rem;display:block}
+  .term .t{font-weight:800}.term .s{font-size:.74rem;color:var(--muted)}
+  .term .fee{font-weight:800;text-align:right}.term .fee small{display:block;font-weight:600;color:var(--muted);font-size:.68rem}
 
-  .empty{padding:40px 22px;text-align:center;color:var(--muted)}
-  .empty .big{font-size:2.4rem;margin-bottom:8px}
+  /* underwriting / moat screen */
+  .scan{text-align:center;padding:30px 0}
+  .spinner{width:42px;height:42px;border-radius:50%;border:4px solid var(--paper-2);border-top-color:var(--blue);margin:0 auto 12px;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .verdict-h{display:flex;align-items:center;gap:12px;padding:14px;border-radius:13px;margin-bottom:14px}
+  .verdict-h.g{background:rgba(30,158,106,.1)}.verdict-h.a{background:rgba(244,163,0,.12)}.verdict-h.r{background:rgba(216,73,43,.1)}
+  .verdict-h .ring{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;flex:0 0 auto;background:conic-gradient(var(--green) var(--deg,0deg),#dfe6d9 0)}
+  .verdict-h .ring.a-r{background:conic-gradient(var(--amber) var(--deg,0deg),#efe3cf 0)}
+  .verdict-h .ring.r-r{background:conic-gradient(var(--red) var(--deg,0deg),#f0d8d2 0)}
+  .verdict-h .ring i{width:48px;height:48px;border-radius:50%;background:var(--white);display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .verdict-h .ring b{font-size:1.05rem;font-weight:800;line-height:1}
+  .verdict-h .ring s{font-size:.55rem;color:var(--muted);text-decoration:none}
+  .verdict-h .vt{font-weight:800;font-size:1.05rem}
+  .verdict-h .vs{font-size:.82rem;color:var(--ink-2)}
+  .moat-h{font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:4px 0 9px}
+  .sig{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;border-radius:10px;background:var(--white);border:1px solid var(--line);margin-bottom:7px;opacity:0;transform:translateY(7px);animation:rise .4s forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .sig .sl{font-size:.85rem}.sig .sl b{font-weight:700}.sig .sl span{display:block;font-size:.72rem;color:var(--muted)}
+  .sig .sv{font-weight:800;font-size:.8rem}
+  .sig .sv.ok{color:var(--green)}.sig .sv.warn{color:#9a6b00}.sig .sv.bad{color:var(--red)}
+  .lineage{font-size:.72rem;color:var(--muted);text-align:center;margin-top:10px;font-style:italic}
+  .splitbar{display:flex;height:30px;border-radius:8px;overflow:hidden;margin:10px 0;font-size:.72rem;font-weight:700;color:#fff}
+  .splitbar .a{background:var(--green);display:grid;place-items:center}.splitbar .b{background:var(--ink-2);display:grid;place-items:center}
 
   /* success */
-  .done{padding:34px 22px;text-align:center}
-  .check{width:72px;height:72px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-size:2.2rem;margin:0 auto 16px;animation:pop .4s}
+  .done{text-align:center;padding:24px 8px}
+  .check{width:64px;height:64px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-size:2rem;margin:0 auto 14px;animation:pop .4s}
   @keyframes pop{from{transform:scale(.6);opacity:0}}
-  .done h3{font-size:1.3rem;margin-bottom:6px}
-  .done p{color:var(--muted);font-size:.92rem}
-  .receipt{background:var(--paper);border:1px dashed var(--line);border-radius:12px;padding:16px;margin:18px 0;text-align:left;font-size:.86rem}
-  .receipt .row{margin-bottom:8px}
-  .disc{font-size:.72rem;color:var(--muted);padding:14px 20px;text-align:center;border-top:1px solid var(--line)}
-  .stepnote{font-size:.76rem;color:var(--muted);margin-top:10px;text-align:center}
+  .receipt{background:var(--paper);border:1px dashed var(--line);border-radius:12px;padding:15px;margin:16px 0;text-align:left;font-size:.86rem}
+
+  /* portfolio dashboard */
+  .pf-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+  .pf-kpi{background:var(--white);border:1px solid var(--line);border-radius:12px;padding:13px}
+  .pf-kpi .n{font-size:1.35rem;font-weight:800;letter-spacing:-.02em}
+  .pf-kpi .n.g{color:var(--green)}.pf-kpi .n.b{color:var(--blue)}
+  .pf-kpi .l{font-size:.68rem;color:var(--muted);margin-top:3px}
+  .dpd{display:flex;height:26px;border-radius:7px;overflow:hidden;margin:6px 0 14px;font-size:.66rem;font-weight:700;color:#fff}
+  .dpd i{display:grid;place-items:center}
+  .tbl{width:100%;border-collapse:collapse;font-size:.8rem}
+  .tbl td,.tbl th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+  .tbl th{color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.04em}
+  @media(max-width:560px){.pf-kpis{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:1fr 1fr}}
+
+  .disc{font-size:.7rem;color:rgba(255,255,255,.4);text-align:center;padding:14px}
+
+  /* guided tour */
+  .tour{position:fixed;inset:0;z-index:60;display:none}
+  .tour.on{display:block}
+  .tour .scrim{position:absolute;inset:0;background:rgba(8,14,24,.55)}
+  .tour .pop{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);width:min(620px,92vw);background:#fff;border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.5);padding:20px 22px}
+  .tour .step{font-size:.72rem;font-weight:800;color:var(--amber);letter-spacing:.06em;text-transform:uppercase}
+  .tour h3{font-size:1.18rem;margin:5px 0 7px;letter-spacing:-.01em}
+  .tour p{color:var(--ink-2);font-size:.95rem;margin-bottom:6px}
+  .tour .proves{font-size:.84rem;color:var(--ink);background:var(--paper-2);border-radius:9px;padding:8px 11px;margin-top:8px}
+  .tour .nav{display:flex;align-items:center;justify-content:space-between;margin-top:15px}
+  .tour .dots{display:flex;gap:5px}
+  .tour .dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+  .tour .dots i.on{background:var(--blue);width:18px;border-radius:4px}
+  .tour .nb{display:flex;gap:9px}
+  .tour button{border:0;border-radius:999px;padding:9px 17px;font-weight:700;cursor:pointer;font-size:.86rem}
+  .tour .prev{background:var(--paper-2);color:var(--ink)}
+  .tour .next{background:var(--blue);color:#fff}
+  .tour .skip{background:transparent;color:var(--muted);font-weight:600}
 </style>
 </head>
 <body>
-<div class="bar">
-  <div class="brand"><span class="mark"></span> Crédito Distun <span class="tag">DEMO · POS Distun</span></div>
+<div class="top">
+  <div class="brand"><span class="mk"></span> Crédito Distun <span class="tag">DEMO · <span class="es">Tablet del vendedor</span><span class="enx">Sales-rep tablet</span></span></div>
   <div class="right">
+    <button class="tourbtn" onclick="startTour()">▶ <span class="es">Recorrido guiado</span><span class="enx">Guided tour</span></button>
     <div class="toggle"><button id="es" class="active" onclick="setLang('es')">ES</button><button id="en" onclick="setLang('en')">EN</button></div>
-    <a class="home" href="../"><span class="lang-es">← Inicio</span><span class="lang-en">← Home</span></a>
+    <a class="home" href="../">← <span class="es">Inicio</span><span class="enx">Home</span></a>
   </div>
 </div>
 
-<div class="app">
-  <!-- ORDER -->
-  <div class="panel">
-    <div class="head">
-      <div><h2><span class="lang-es">Nuevo pedido</span><span class="lang-en">New order</span></h2><div class="sub"><span class="lang-es">Tablet del vendedor · Sucursal Zona 12</span><span class="lang-en">Sales-rep tablet · Branch Zona 12</span></div></div>
-    </div>
-    <div class="cust">
-      <div class="avatar">EC</div>
-      <div>
-        <div class="nm">Ferretería El Constructor</div>
-        <div class="meta"><span class="lang-es">Cliente Distun desde 2019 · 47 pedidos · Zona 12, Guatemala</span><span class="lang-en">Distun customer since 2019 · 47 orders · Zona 12, Guatemala</span></div>
-      </div>
-    </div>
-    <div class="body" id="catalog"></div>
-    <div class="order-foot">
-      <div class="row"><span class="lang-es">Subtotal</span><span class="lang-en">Subtotal</span><span id="subtotal">Q 0.00</span></div>
-      <div class="row"><span>IVA (12%)</span><span id="iva">Q 0.00</span></div>
-      <div class="row tot"><span>Total</span><span id="total">Q 0.00</span></div>
-      <button class="btn" id="financeBtn" onclick="runUnderwriting()" disabled><span class="lang-es">Financiar este pedido →</span><span class="lang-en">Finance this order →</span></button>
-      <div class="stepnote"><span class="lang-es">Agrega productos para evaluar el crédito</span><span class="lang-en">Add products to assess credit</span></div>
+<div class="stage">
+  <!-- LEFT RAIL -->
+  <div class="rail">
+    <h4><span class="es">Pantallas</span><span class="enx">Screens</span></h4>
+    <a data-nav="route" class="on" onclick="go('route')"><span class="num">1</span><span class="es">Ruta del día</span><span class="enx">Daily route</span></a>
+    <a data-nav="customer" onclick="go('customer')"><span class="num">2</span><span class="es">Perfil del cliente</span><span class="enx">Customer profile</span></a>
+    <a data-nav="cart" onclick="go('cart')"><span class="num">3</span><span class="es">Nuevo pedido</span><span class="enx">New order</span></a>
+    <a data-nav="pay" onclick="go('pay')"><span class="num">4</span><span class="es">Forma de pago</span><span class="enx">Payment</span></a>
+    <a data-nav="terms" onclick="go('terms')"><span class="num">5</span><span class="es">Plazo</span><span class="enx">Terms</span></a>
+    <a data-nav="decision" onclick="go('decision')"><span class="num">6</span><span class="es">Decisión de crédito</span><span class="enx">Credit decision</span></a>
+    <a data-nav="confirm" onclick="go('confirm')"><span class="num">7</span><span class="es">Confirmación</span><span class="enx">Confirmation</span></a>
+    <a data-nav="repay" onclick="go('repay')"><span class="num">8</span><span class="es">Pagos</span><span class="enx">Repayment</span></a>
+    <a data-nav="portfolio" onclick="go('portfolio')"><span class="num">★</span><span class="es">Cartera (ops)</span><span class="enx">Portfolio (ops)</span></a>
+    <div class="scen">
+      <label><span class="es">Escenario</span><span class="enx">Scenario</span></label>
+      <select id="scenario" onchange="setScenario(this.value)">
+        <option value="approved"><span>Doña Marta · aprobado</span></option>
+        <option value="partial">Contraoferta · límite parcial</option>
+        <option value="cold">Cliente nuevo · cold-start</option>
+      </select>
     </div>
   </div>
 
-  <!-- UNDERWRITING -->
-  <div class="panel uw">
-    <div class="head"><div><h2>⚡ <span class="lang-es">Evaluación de crédito</span><span class="lang-en">Credit underwriting</span></h2><div class="sub"><span class="lang-es">Modelo: historial de compras Distun</span><span class="lang-en">Model: Distun purchase history</span></div></div></div>
-    <div id="uwState" class="uw-state">
-      <div class="empty">
-        <div class="big">🧮</div>
-        <p><span class="lang-es">El límite se calcula con el comportamiento de compra del cliente — sin buró, sin papeleo.</span><span class="lang-en">The limit is computed from the customer's buying behavior — no bureau, no paperwork.</span></p>
+  <!-- DEVICE -->
+  <div class="device-wrap">
+   <div class="device">
+    <div class="screen">
+
+      <!-- 1 ROUTE -->
+      <div class="scr active" data-screen="route">
+        <div class="ah"><div><div class="t"><span class="es">Ruta del día</span><span class="enx">Today's route</span></div><div class="s">Kevin T. · Chimaltenango · mar 28 jun</div></div><span class="badge n">14 <span class="es">paradas</span><span class="enx">stops</span></span></div>
+        <div class="ab">
+          <div class="stop" onclick="go('customer')">
+            <div class="l"><div class="ic">🏪</div><div><div class="nm">Ferretería La Bendición</div><div class="meta"><span class="es">Doña Marta · cliente 6 años</span><span class="enx">Doña Marta · 6-yr customer</span></div></div></div>
+            <span class="badge g"><span class="es">Crédito: Q75,000</span><span class="enx">Credit: Q75,000</span></span>
+          </div>
+          <div class="stop" onclick="go('customer')">
+            <div class="l"><div class="ic">🏪</div><div><div class="nm">Ferretería El Cerrojo</div><div class="meta"><span class="es">Don Aroldo · cliente 3 años</span><span class="enx">Don Aroldo · 3-yr customer</span></div></div></div>
+            <span class="badge g">Q40,000</span>
+          </div>
+          <div class="stop" onclick="go('customer')">
+            <div class="l"><div class="ic">🏪</div><div><div class="nm">Materiales Xela Sur</div><div class="meta"><span class="es">Cliente nuevo · 4 meses</span><span class="enx">New · 4 months</span></div></div></div>
+            <span class="badge a"><span class="es">Evaluar</span><span class="enx">Assess</span></span>
+          </div>
+          <div class="stop" onclick="go('customer')">
+            <div class="l"><div class="ic">🏪</div><div><div class="nm">Ferretería San José</div><div class="meta"><span class="es">Pago vencido · Q8,400</span><span class="enx">Overdue · Q8,400</span></div></div></div>
+            <span class="badge r"><span class="es">En mora</span><span class="enx">Overdue</span></span>
+          </div>
+          <p style="font-size:.78rem;color:var(--muted);text-align:center;margin-top:10px"><span class="es">Toca una ferretería para abrir su cuenta</span><span class="enx">Tap a store to open its account</span></p>
+        </div>
+      </div>
+
+      <!-- 2 CUSTOMER -->
+      <div class="scr" data-screen="customer">
+        <div class="ah"><div class="back" onclick="go('route')">‹ <span class="es">Ruta</span><span class="enx">Route</span></div><div class="t" style="text-align:center">Ferretería La Bendición</div><span class="badge g" id="custBadge"><span class="es">Activo</span><span class="enx">Active</span></span></div>
+        <div class="ab">
+          <div class="c360">
+            <div class="avatar">MB</div>
+            <div><div style="font-weight:800;font-size:1.05rem">Doña Marta Xitumul</div><div style="font-size:.8rem;color:var(--muted)" id="custSub"><span class="es">Cliente Distun desde 2020 · 73 facturas · Chimaltenango</span><span class="enx">Distun customer since 2020 · 73 invoices · Chimaltenango</span></div></div>
+          </div>
+          <div class="line-card" id="lineCard">
+            <div class="lbl"><span class="es">Línea Crédito Distun · disponible</span><span class="enx">Crédito Distun line · available</span></div>
+            <div class="big" id="lineBig">Q75,000</div>
+            <div class="ubar"><i style="width:8%" id="lineBar"></i></div>
+            <div class="lbl" style="margin-top:7px" id="lineUsed"><span class="es">Usado: Q6,000 de Q75,000</span><span class="enx">Used: Q6,000 of Q75,000</span></div>
+          </div>
+          <div class="kpis">
+            <div class="kpi"><div class="n">Q45,000</div><div class="l"><span class="es">compra/mes prom.</span><span class="enx">avg buy/mo</span></div></div>
+            <div class="kpi"><div class="n" style="color:var(--green)">71/73</div><div class="l"><span class="es">facturas a tiempo</span><span class="enx">invoices on time</span></div></div>
+            <div class="kpi"><div class="n">6 <span class="es">años</span><span class="enx">yrs</span></div><div class="l"><span class="es">antigüedad</span><span class="enx">tenure</span></div></div>
+          </div>
+          <div style="font-size:.74rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em"><span class="es">Compras últimos 12 meses</span><span class="enx">Purchases last 12 months</span></div>
+          <div class="spark"><i style="height:55%"></i><i style="height:60%"></i><i style="height:52%"></i><i style="height:68%"></i><i style="height:64%"></i><i style="height:72%"></i><i style="height:70%"></i><i style="height:80%"></i><i style="height:76%"></i><i style="height:88%"></i><i style="height:84%"></i><i style="height:96%"></i></div>
+        </div>
+        <div class="stickybar"><button class="btn" onclick="go('cart')"><span class="es">Nuevo pedido →</span><span class="enx">New order →</span></button></div>
+      </div>
+
+      <!-- 3 CART -->
+      <div class="scr" data-screen="cart">
+        <div class="ah"><div class="back" onclick="go('customer')">‹ <span class="es">Cuenta</span><span class="enx">Account</span></div><div class="t"><span class="es">Nuevo pedido</span><span class="enx">New order</span></div><span class="badge n">La Bendición</span></div>
+        <div class="ab" id="catalog"></div>
+        <div class="stickybar">
+          <div class="nudge">🚚 <span class="es">+20 sacos = precio camionada (ahorra Q900)</span><span class="enx">+20 bags = full-truck price (save Q900)</span></div>
+          <div class="row"><span class="es">Subtotal</span><span class="enx">Subtotal</span><span id="subtotal">Q 0</span></div>
+          <div class="row"><span>IVA (12%)</span><span id="iva">Q 0</span></div>
+          <div class="row tot"><span>Total</span><span id="total">Q 0</span></div>
+          <button class="btn" id="toPayBtn" onclick="go('pay')" disabled><span class="es">Forma de pago →</span><span class="enx">Payment →</span></button>
+        </div>
+      </div>
+
+      <!-- 4 PAY -->
+      <div class="scr" data-screen="pay">
+        <div class="ah"><div class="back" onclick="go('cart')">‹ <span class="es">Pedido</span><span class="enx">Order</span></div><div class="t"><span class="es">Forma de pago</span><span class="enx">Payment method</span></div><span class="badge n" id="payTotal">Q0</span></div>
+        <div class="ab">
+          <div class="paycard" onclick="selPay('cash',this)"><div><div class="t"><span class="es">Contado</span><span class="enx">Pay now</span></div><div class="s"><span class="es">Efectivo o transferencia</span><span class="enx">Cash or transfer</span></div></div><span style="font-size:1.4rem">💵</span></div>
+          <div class="paycard sel" onclick="selPay('credit',this)"><div><div class="t">Crédito Distun</div><div class="s" id="payAvail"><span class="es">Q75,000 disponible · sin buró</span><span class="enx">Q75,000 available · no bureau</span></div></div><span class="badge g" id="payRec"><span class="es">Recomendado</span><span class="enx">Recommended</span></span></div>
+        </div>
+        <div class="stickybar"><button class="btn" id="toTermsBtn" onclick="go('terms')"><span class="es">Continuar →</span><span class="enx">Continue →</span></button></div>
+      </div>
+
+      <!-- 5 TERMS -->
+      <div class="scr" data-screen="terms">
+        <div class="ah"><div class="back" onclick="go('pay')">‹ <span class="es">Pago</span><span class="enx">Payment</span></div><div class="t"><span class="es">Elige el plazo</span><span class="enx">Choose term</span></div></div>
+        <div class="ab">
+          <p style="font-size:.84rem;color:var(--muted);margin-bottom:12px"><span class="es">Hecho para cómo paga una obra: cuando el trabajo paga. No es interés — es un cargo fijo.</span><span class="enx">Built for how a job pays: when the work pays. Not interest — a flat fee.</span></p>
+          <div id="termsList"></div>
+        </div>
+        <div class="stickybar"><button class="btn green" onclick="runDecision()"><span class="es">Solicitar crédito ✓</span><span class="enx">Request credit ✓</span></button></div>
+      </div>
+
+      <!-- 6 DECISION (MOAT) -->
+      <div class="scr" data-screen="decision">
+        <div class="ah"><div class="t">⚡ <span class="es">Decisión de crédito</span><span class="enx">Credit decision</span></div><div class="s"><span class="es">Modelo: historial Distun</span><span class="enx">Model: Distun history</span></div></div>
+        <div class="ab" id="decisionBody"></div>
+        <div class="stickybar" id="decisionFoot"></div>
+      </div>
+
+      <!-- 7 CONFIRM / SUCCESS -->
+      <div class="scr" data-screen="confirm">
+        <div class="ah"><div class="t"><span class="es">Confirmación</span><span class="enx">Confirmation</span></div></div>
+        <div class="ab" id="confirmBody"></div>
+      </div>
+
+      <!-- 8 REPAY -->
+      <div class="scr" data-screen="repay">
+        <div class="ah"><div class="back" onclick="go('route')">‹ <span class="es">Ruta</span><span class="enx">Route</span></div><div class="t"><span class="es">Pagos</span><span class="enx">Repayment</span></div><span class="badge a"><span class="es">Vence en 6 días</span><span class="enx">Due in 6 days</span></span></div>
+        <div class="ab">
+          <div class="line-card" style="background:linear-gradient(135deg,#2B3A52,#15233B)">
+            <div class="lbl"><span class="es">Saldo pendiente · La Bendición</span><span class="enx">Outstanding · La Bendición</span></div>
+            <div class="big">Q60,000</div>
+            <div class="lbl"><span class="es">Pedido 28 jun · net-30 · vence 28 jul 2026</span><span class="enx">Order Jun 28 · net-30 · due Jul 28 2026</span></div>
+          </div>
+          <button class="btn green" onclick="payToast()"><span class="es">Registrar pago</span><span class="enx">Record payment</span></button>
+          <button class="btn ghost" style="margin-top:9px" onclick="payToast()"><span class="es">Enviar link de pago (SMS)</span><span class="enx">Send payment link (SMS)</span></button>
+          <button class="btn ghost" style="margin-top:9px" onclick="payToast()"><span class="es">Pago parcial</span><span class="enx">Partial payment</span></button>
+          <div id="payMsg" style="text-align:center;margin-top:12px;font-size:.86rem;color:var(--green);font-weight:700;min-height:20px"></div>
+          <div style="font-size:.78rem;color:var(--muted);text-align:center;margin-top:6px"><span class="es">Pagar a tiempo sube la línea de Doña Marta.</span><span class="enx">Paying on time raises Doña Marta's limit.</span></div>
+        </div>
+      </div>
+
+      <!-- PORTFOLIO -->
+      <div class="scr" data-screen="portfolio">
+        <div class="ah"><div><div class="t"><span class="es">Cartera · Crédito Distun</span><span class="enx">Portfolio · Crédito Distun</span></div><div class="s"><span class="es">Lic. Andrea Robles · Credit Ops</span><span class="enx">Lic. Andrea Robles · Credit Ops</span></div></div><span class="badge g">●  <span class="es">en línea</span><span class="enx">live</span></span></div>
+        <div class="ab">
+          <div class="pf-kpis">
+            <div class="pf-kpi"><div class="n b">Q48M</div><div class="l"><span class="es">originado/año (corriendo)</span><span class="enx">originated/yr (run-rate)</span></div></div>
+            <div class="pf-kpi"><div class="n">64%</div><div class="l"><span class="es">utilización de líneas</span><span class="enx">line utilization</span></div></div>
+            <div class="pf-kpi"><div class="n g">0.7%</div><div class="l"><span class="es">pérdida/ciclo</span><span class="enx">loss/cycle</span></div></div>
+            <div class="pf-kpi"><div class="n">82%</div><div class="l"><span class="es">tasa de aprobación</span><span class="enx">approval rate</span></div></div>
+          </div>
+          <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:5px"><span class="es">Mora por días (DPD)</span><span class="enx">Delinquency by days (DPD)</span></div>
+          <div class="dpd"><i style="width:91%;background:var(--green)">al día 91%</i><i style="width:6%;background:var(--amber)">1-30</i><i style="width:3%;background:var(--red)">30+</i></div>
+          <div style="font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:3px"><span class="es">Top zonas por volumen</span><span class="enx">Top zones by volume</span></div>
+          <table class="tbl">
+            <tr><th><span class="es">Zona</span><span class="enx">Zone</span></th><th><span class="es">Libro</span><span class="enx">Book</span></th><th><span class="es">Util.</span><span class="enx">Util.</span></th><th><span class="es">Pérdida</span><span class="enx">Loss</span></th></tr>
+            <tr><td>Chimaltenango</td><td>Q12.4M</td><td>67%</td><td style="color:var(--green)">0.5%</td></tr>
+            <tr><td>Sacatepéquez</td><td>Q9.1M</td><td>61%</td><td style="color:var(--green)">0.6%</td></tr>
+            <tr><td>Quetzaltenango</td><td>Q8.7M</td><td>70%</td><td style="color:var(--amber)">1.1%</td></tr>
+            <tr><td>Guatemala (capital)</td><td>Q17.8M</td><td>63%</td><td style="color:var(--green)">0.7%</td></tr>
+          </table>
+          <p style="font-size:.76rem;color:var(--muted);margin-top:12px"><span class="es">Cada aprobación es trazable a las señales del historial de compras que la generaron — auditable y explicable.</span><span class="enx">Every approval traces back to the purchase-history signals that produced it — auditable and explainable.</span></p>
+        </div>
+      </div>
+
+    </div>
+   </div>
+  </div>
+</div>
+
+<div class="disc"><span class="es">Prototipo. Evaluación simulada en el navegador con datos ilustrativos — no es una decisión de crédito real.</span><span class="enx">Prototype. Underwriting simulated in-browser with illustrative data — not a real credit decision.</span></div>
+
+<!-- GUIDED TOUR -->
+<div class="tour" id="tour">
+  <div class="scrim" onclick="endTour()"></div>
+  <div class="pop">
+    <div class="step" id="tStep">PASO 1 / 8</div>
+    <h3 id="tTitle"></h3>
+    <p id="tBody"></p>
+    <div class="proves" id="tProves"></div>
+    <div class="nav">
+      <div class="dots" id="tDots"></div>
+      <div class="nb">
+        <button class="skip" onclick="endTour()"><span class="es">Salir</span><span class="enx">Exit</span></button>
+        <button class="prev" onclick="tourStep(-1)"><span class="es">Atrás</span><span class="enx">Back</span></button>
+        <button class="next" id="tNext" onclick="tourStep(1)"><span class="es">Siguiente</span><span class="enx">Next</span></button>
       </div>
     </div>
-    <div class="disc"><span class="lang-es">Prototipo. Evaluación simulada en el navegador con datos ilustrativos — no es una decisión de crédito real.</span><span class="lang-en">Prototype. Underwriting simulated in-browser with illustrative data — not a real credit decision.</span></div>
   </div>
 </div>
 
 <script>
-  function setLang(l){document.body.classList.toggle('en',l==='en');document.documentElement.lang=l;
-    document.getElementById('es').classList.toggle('active',l==='es');document.getElementById('en').classList.toggle('active',l==='en');
-    try{localStorage.setItem('cd_lang',l)}catch(e){}}
-  try{if(localStorage.getItem('cd_lang')==='en')setLang('en');}catch(e){}
+/* ---------- i18n ---------- */
+function setLang(l){document.body.classList.toggle('en',l==='en');document.documentElement.lang=l;
+  document.getElementById('es').classList.toggle('active',l==='es');document.getElementById('en').classList.toggle('active',l==='en');
+  renderCatalog();renderTerms();if(curScreen==='decision')renderDecision();if(tourOn)renderTour();try{localStorage.setItem('cd_lang',l)}catch(e){}}
+function EN(){return document.body.classList.contains('en');}
+try{if(localStorage.getItem('cd_lang')==='en')setLang('en');}catch(e){}
+const Q=n=>'Q '+Math.round(n).toLocaleString('es-GT');
 
-  const T = {
-    es:{approved:'APROBADO',line:'Línea de crédito aprobada',score:'Puntaje',choose:'Elige un plazo de pago',approve:'Aprobar pedido',done:'¡Pedido aprobado!',doneSub:'El pedido se envía a bodega. El cliente paga cuando cobra la obra.',order:'Pedido',term:'Plazo',fee:'Cargo',due:'Vence',newOrder:'Nuevo pedido',analyzing:'Analizando historial de compras…',sigOrders:'Pedidos en 24 meses',sigPay:'Comportamiento de pago',sigTrend:'Tendencia de compra',sigTenure:'Antigüedad',onTime:'98% a tiempo',rising:'Creciente',yrs:'6 años',free:'Sin costo',pay30:'Paga en 30 días',pay60:'Paga en 60 días',pay90:'Paga en 90 días',flat:'tarifa fija',days:'días'},
-    en:{approved:'APPROVED',line:'Approved credit line',score:'Score',choose:'Choose a payment term',approve:'Approve order',done:'Order approved!',doneSub:'The order ships to the warehouse. The customer pays when the job pays.',order:'Order',term:'Term',fee:'Fee',due:'Due',newOrder:'New order',analyzing:'Analyzing purchase history…',sigOrders:'Orders in 24 months',sigPay:'Payment behavior',sigTrend:'Purchase trend',sigTenure:'Tenure',onTime:'98% on time',rising:'Rising',yrs:'6 years',free:'Free',pay30:'Pay in 30 days',pay60:'Pay in 60 days',pay90:'Pay in 90 days',flat:'flat fee',days:'days'}
-  };
-  const L = ()=> document.body.classList.contains('en')?T.en:T.es;
-  const Q = n => 'Q '+n.toLocaleString('es-GT',{minimumFractionDigits:2,maximumFractionDigits:2});
+/* ---------- state ---------- */
+let curScreen='route', scenario='approved', payMethod='credit', term={d:30,fee:0};
+const CATALOG=[
+  {id:1,es:'Cemento UGC 42.5kg',en:'Cement UGC 42.5kg',ic:'🧱',price:92,q:0},
+  {id:2,es:'Varilla de hierro #4 (qq)',en:'Rebar #4 (cwt)',ic:'🔩',price:340,q:0},
+  {id:3,es:'Block 15×20×40 (ciento)',en:'Block 15×20×40 (per 100)',ic:'🧊',price:520,q:0},
+  {id:4,es:'Lámina galvanizada cal. 26',en:'Galvanized sheet ga.26',ic:'⬛',price:128,q:0},
+  {id:5,es:'Tubo PVC 4" (tira)',en:'PVC pipe 4" (length)',ic:'⚪',price:74,q:0},
+];
+const SCEN={
+  approved:{name:'Doña Marta · La Bendición',line:75000,used:6000,sub:{es:'Cliente Distun desde 2020 · 73 facturas',en:'Distun customer since 2020 · 73 invoices'},badge:{es:'Activo',en:'Active'},bcls:'g'},
+  partial:{name:'Don Aroldo · El Cerrojo',line:45000,used:0,sub:{es:'Cliente 3 años · línea Q45,000',en:'3-yr customer · Q45,000 line'},badge:{es:'Activo',en:'Active'},bcls:'g'},
+  cold:{name:'Materiales Xela Sur',line:10000,used:0,sub:{es:'Cliente nuevo · 4 meses de historial',en:'New customer · 4 months history'},badge:{es:'Nuevo',en:'New'},bcls:'a'},
+};
+function orderTotal(){const s=CATALOG.reduce((a,i)=>a+i.price*i.q,0);return s+s*.12;}
 
-  const CATALOG = [
-    {id:1,es:'Cemento UGC 42.5kg',en:'Cement UGC 42.5kg',ic:'🧱',price:92,q:0},
-    {id:2,es:'Varilla de hierro 3/8" (qq)',en:'Rebar 3/8" (cwt)',ic:'🔩',price:340,q:0},
-    {id:3,es:'Block 15×20×40 (ciento)',en:'Block 15×20×40 (per 100)',ic:'🧊',price:520,q:0},
-    {id:4,es:'Lámina galvanizada calibre 26',en:'Galvanized sheet ga. 26',ic:'⬛',price:128,q:0},
-    {id:5,es:'Tubo PVC 4" (tira)',en:'PVC pipe 4" (length)',ic:'⚪',price:74,q:0}
-  ];
-  let selectedTerm=null, lastLimit=0, lastTotal=0;
+/* ---------- navigation ---------- */
+function go(s){curScreen=s;
+  document.querySelectorAll('.scr').forEach(x=>x.classList.toggle('active',x.dataset.screen===s));
+  document.querySelectorAll('[data-nav]').forEach(a=>a.classList.toggle('on',a.dataset.nav===s));
+  document.querySelector('.screen').scrollTop=0;
+  if(s==='pay'){document.getElementById('payTotal').textContent=Q(orderTotal());}
+  if(s==='terms')renderTerms();
+  if(s==='decision')renderDecision();
+}
+function setScenario(v){scenario=v;applyScenario();}
+function applyScenario(){const sc=SCEN[scenario];
+  document.getElementById('lineBig').textContent=Q(sc.line);
+  document.getElementById('lineBar').style.width=Math.max(4,Math.round(sc.used/sc.line*100))+'%';
+  document.getElementById('lineUsed').innerHTML=`<span class="es">Usado: ${Q(sc.used)} de ${Q(sc.line)}</span><span class="enx">Used: ${Q(sc.used)} of ${Q(sc.line)}</span>`;
+  document.getElementById('custSub').innerHTML=`<span class="es">${sc.sub.es} · Chimaltenango</span><span class="enx">${sc.sub.en} · Chimaltenango</span>`;
+  document.querySelector('#customer .avatar').textContent = sc.name.match(/[A-Z]/g)? sc.name.match(/\b[A-Za-zÁ-ú]/g).slice(0,2).join('').toUpperCase():'CD';
+  document.querySelector('#customer .t')&&0;
+  document.getElementById('payAvail').innerHTML=`<span class="es">${Q(sc.line)} disponible · sin buró</span><span class="enx">${Q(sc.line)} available · no bureau</span>`;
+}
 
-  function renderCatalog(){
-    const c=document.getElementById('catalog');const en=document.body.classList.contains('en');
-    c.innerHTML = CATALOG.map(i=>`
-      <div class="item">
-        <div class="info"><div class="sku">${i.ic}</div>
-          <div><div class="t">${en?i.en:i.es}</div><div class="p">${Q(i.price)}</div></div></div>
-        <div class="qty">
-          <button onclick="chg(${i.id},-1)">−</button><span id="q${i.id}">${i.q}</span><button onclick="chg(${i.id},1)">+</button>
-        </div>
-      </div>`).join('');
-  }
-  function chg(id,d){const it=CATALOG.find(x=>x.id===id);it.q=Math.max(0,it.q+d);document.getElementById('q'+id).textContent=it.q;recompute();}
-  function recompute(){
-    const sub=CATALOG.reduce((s,i)=>s+i.price*i.q,0);const iva=sub*.12;const tot=sub+iva;lastTotal=tot;
-    document.getElementById('subtotal').textContent=Q(sub);
-    document.getElementById('iva').textContent=Q(iva);
-    document.getElementById('total').textContent=Q(tot);
-    document.getElementById('financeBtn').disabled = sub<=0;
-  }
+/* ---------- catalog ---------- */
+function renderCatalog(){const c=document.getElementById('catalog');const en=EN();
+  c.innerHTML=CATALOG.map(i=>`<div class="item"><div class="info"><div class="sku">${i.ic}</div><div><div class="t">${en?i.en:i.es}</div><div class="p">${Q(i.price)}</div></div></div>
+   <div class="qty"><button onclick="chg(${i.id},-1)">−</button><span id="q${i.id}">${i.q}</span><button onclick="chg(${i.id},1)">+</button></div></div>`).join('');}
+function chg(id,d){const it=CATALOG.find(x=>x.id===id);it.q=Math.max(0,it.q+d);document.getElementById('q'+id).textContent=it.q;recompute();}
+function recompute(){const s=CATALOG.reduce((a,i)=>a+i.price*i.q,0);
+  document.getElementById('subtotal').textContent=Q(s);document.getElementById('iva').textContent=Q(s*.12);document.getElementById('total').textContent=Q(s+s*.12);
+  document.getElementById('toPayBtn').disabled=s<=0;}
+function seedCart(){CATALOG[0].q=200;CATALOG[1].q=30;CATALOG[2].q=12;renderCatalog();recompute();}
 
-  function runUnderwriting(){
-    const t=L();const el=document.getElementById('uwState');
-    el.innerHTML=`<div class="scan"><div class="spinner"></div><p>${t.analyzing}</p></div>`;
-    const sigs=[
-      {b:t.sigOrders,v:'47',cls:''},{b:t.sigPay,v:t.onTime,cls:''},
-      {b:t.sigTrend,v:t.rising,cls:''},{b:t.sigTenure,v:t.yrs,cls:''}
+/* ---------- pay ---------- */
+function selPay(m,el){payMethod=m;document.querySelectorAll('#pay .paycard').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');
+  document.getElementById('toTermsBtn').disabled=false;
+  // if cash, skip terms→ but keep simple: still allow
+}
+
+/* ---------- terms ---------- */
+function renderTerms(){const t=orderTotal();const en=EN();
+  const opts=[{d:30,f:0,lbl:en?'Pay in 30 days':'Paga en 30 días',free:true},{d:60,f:.035,lbl:en?'Pay in 60 days':'Paga en 60 días'},{d:90,f:.055,lbl:en?'Pay in 90 days':'Paga en 90 días'}];
+  document.getElementById('termsList').innerHTML=opts.map((o,k)=>{
+    const fee=t*o.f;const total=t+fee;const sel=(o.d===term.d)?'sel':'';
+    const feeTxt=o.free?(en?'Free':'Sin costo'):Q(fee);
+    const sub=o.free?(en?'Merchant-funded':'Financiado por Distun'):(`${(o.f*100).toFixed(1)}% ${en?'flat fee':'cargo fijo'}`);
+    return `<div class="term ${sel}" onclick="pickTerm(${o.d},${o.f})"><div><div class="t">Net-${o.d}</div><div class="s">${o.lbl} · ${en?'total':'total'} ${Q(total)}</div></div><div class="fee">${feeTxt}<small>${sub}</small></div></div>`;
+  }).join('');}
+function pickTerm(d,f){term={d:d,fee:f};renderTerms();}
+
+/* ---------- decision (the moat) ---------- */
+function runDecision(){go('decision');}
+function renderDecision(){
+  const body=document.getElementById('decisionBody');const foot=document.getElementById('decisionFoot');const en=EN();
+  body.innerHTML=`<div class="scan"><div class="spinner"></div><p>${en?'Analyzing Distun purchase history…':'Analizando historial de compras Distun…'}</p></div>`;
+  foot.innerHTML='';
+  setTimeout(()=>paintDecision(),1500);
+}
+function paintDecision(){
+  const en=EN();const t=orderTotal();const sc=SCEN[scenario];const body=document.getElementById('decisionBody');const foot=document.getElementById('decisionFoot');
+  let sigs,verdict,vcls,ring,score,head,sub;
+  if(scenario==='approved'){
+    score=82;ring='';vcls='g';verdict=en?'Approved':'Aprobado';head=`${verdict} — ${Q(t)} · net-${term.d}`;sub=en?'Decision in seconds, no bureau file':'Decisión en segundos, sin buró';
+    sigs=[
+      {b:en?'Tenure':'Antigüedad',s:en?'Distun customer 6 years':'Cliente Distun 6 años',v:en?'Strong':'Fuerte',c:'ok'},
+      {b:en?'Volume':'Volumen',s:en?'Q45,000/mo · trend ↑12% YoY':'Q45,000/mes · tendencia ↑12% anual',v:'✓',c:'ok'},
+      {b:en?'Payment consistency':'Consistencia de pago',s:en?'71/73 invoices on time · 0 days avg delay':'71/73 facturas a tiempo · 0 días mora prom.',v:en?'Strong':'Fuerte',c:'ok'},
+      {b:en?'Recency':'Recencia',s:en?'Last purchase 4 days ago':'Última compra hace 4 días',v:'✓',c:'ok'},
+      {b:en?'Product mix':'Mezcla de producto',s:en?'Structural (cement+rebar) = active jobs':'Estructural (cemento+varilla) = obras activas',v:'✓',c:'ok'},
     ];
-    setTimeout(()=>{
-      el.innerHTML=`<div class="signals">${sigs.map((s,i)=>`<div class="sig" style="animation-delay:${i*.12}s"><b>${s.b}</b><span class="v ${s.cls}">${s.v}</span></div>`).join('')}</div>`;
-    },650);
-    setTimeout(()=>showDecision(),1700);
+  } else if(scenario==='partial'){
+    score=68;ring='a-r';vcls='a';verdict=en?'Partial approval':'Aprobado parcial';head=`${verdict}: ${Q(sc.line)}`;sub=en?'Order exceeds the available line':'El pedido supera la línea disponible';
+    sigs=[
+      {b:en?'Tenure':'Antigüedad',s:en?'Distun customer 3 years':'Cliente Distun 3 años',v:'✓',c:'ok'},
+      {b:en?'Payment consistency':'Consistencia de pago',s:en?'on time, no delinquency':'a tiempo, sin mora',v:'✓',c:'ok'},
+      {b:en?'Limit driver':'Límite atado a',s:en?'avg monthly volume Q38k → line Q45k':'volumen mensual prom. Q38k → línea Q45k',v:en?'Binds':'Limita',c:'warn'},
+    ];
+  } else {
+    score='—';ring='';vcls='g';verdict=en?'Welcome line':'Línea de bienvenida';head=`${verdict}: Q10,000`;sub=en?'Starter limit — grows as you repay':'Límite inicial — crece al pagar a tiempo';
+    sigs=[
+      {b:en?'Tenure':'Antigüedad',s:en?'New customer · 4 months data':'Cliente nuevo · 4 meses de datos',v:en?'Thin':'Delgado',c:'warn'},
+      {b:en?'Early signal':'Señal temprana',s:en?'3/3 orders paid on time':'3/3 pedidos pagados a tiempo',v:'✓',c:'ok'},
+      {b:en?'Zone prior':'Referencia de zona',s:en?'Chimaltenango segment baseline':'base del segmento Chimaltenango',v:'✓',c:'ok'},
+    ];
   }
+  const scoreTxt = (scenario==='cold')?(en?'NEW':'NUEVO'):score+'';
+  body.innerHTML=`
+    <div class="verdict-h ${vcls}">
+      <div class="ring ${ring==='a-r'?'a-r':''}" style="--deg:${scenario==='cold'?0:(score/100*360)}deg"><i><b>${scoreTxt}</b><s>${en?'score':'puntaje'}</s></i></div>
+      <div><div class="vt">${vcls==='g'?'✓':'◑'} ${head}</div><div class="vs">${sub}</div></div>
+    </div>
+    <div class="moat-h">${en?'Why we approved — Distun purchase signals':'Por qué aprobamos — señales del historial Distun'}</div>
+    ${sigs.map((s,k)=>`<div class="sig" style="animation-delay:${k*.1}s"><div class="sl"><b>${s.b}</b><span>${s.s}</span></div><div class="sv ${s.c}">${s.v}</div></div>`).join('')}
+    ${scenario==='partial'?`<div class="moat-h" style="margin-top:12px">${en?'Suggested split':'División sugerida'}</div><div class="splitbar"><div class="a" style="width:${Math.round(sc.line/t*100)}%">${en?'Credit':'Crédito'} ${Q(sc.line)}</div><div class="b" style="width:${100-Math.round(sc.line/t*100)}%">${en?'Cash':'Contado'} ${Q(t-sc.line)}</div></div>`:''}
+    <div class="lineage">${en?'Based on 73 invoices and 6 years of Distun purchase history':'Basado en 73 facturas y 6 años de historial de compras Distun'}</div>`;
+  foot.innerHTML=`<button class="btn green" onclick="go('confirm');renderConfirm()">${scenario==='partial'?(en?'Accept split & continue ✓':'Aceptar división y continuar ✓'):(en?'Confirm order ✓':'Confirmar pedido ✓')}</button>`;
+}
 
-  function showDecision(){
-    const t=L();const el=document.getElementById('uwState');
-    // limit derived from order size, capped — illustrative
-    const limit = Math.max(20000, Math.ceil((lastTotal*2.4)/1000)*1000 + 8000);
-    lastLimit=limit;
-    el.innerHTML=`
-      <div class="decision">
-        <div class="score-ring" id="ring"><div class="score-inner"><div class="num">A-</div><div class="lbl">${t.score}</div></div></div>
-        <div class="verdict">✓ ${t.approved}</div>
-        <div class="limit-l">${t.line}</div>
-        <div class="limit">${Q(limit)}</div>
-      </div>
-      <div style="font-weight:800;font-size:.9rem;margin:18px 0 4px">${t.choose}</div>
-      <div class="terms" id="terms">
-        <div class="term sel" data-term="30" data-fee="0" onclick="pick(this)">
-          <div><div class="t">Net-30</div><div class="s">${t.pay30}</div></div>
-          <div class="fee">${t.free}<small>0%</small></div>
-        </div>
-        <div class="term" data-term="60" data-fee="0.035" onclick="pick(this)">
-          <div><div class="t">Net-60</div><div class="s">${t.pay60}</div></div>
-          <div class="fee">${Q(lastTotal*0.035)}<small>3.5% ${t.flat}</small></div>
-        </div>
-        <div class="term" data-term="90" data-fee="0.055" onclick="pick(this)">
-          <div><div class="t">Net-90</div><div class="s">${t.pay90}</div></div>
-          <div class="fee">${Q(lastTotal*0.055)}<small>5.5% ${t.flat}</small></div>
-        </div>
-      </div>
-      <button class="btn green" onclick="approve()" style="margin-top:16px">${t.approve} ✓</button>`;
-    selectedTerm={term:30,fee:0};
-    requestAnimationFrame(()=>{const r=document.getElementById('ring');if(r)r.style.background='conic-gradient(var(--green) 306deg,var(--paper-2) 0)';});
-  }
-  function pick(e){document.querySelectorAll('.term').forEach(x=>x.classList.remove('sel'));e.classList.add('sel');
-    selectedTerm={term:+e.dataset.term,fee:+e.dataset.fee};}
+/* ---------- confirm ---------- */
+function renderConfirm(){const en=EN();const t=orderTotal();const sc=SCEN[scenario];
+  const financed = scenario==='partial'?sc.line:(scenario==='cold'?Math.min(t,10000):t);
+  const fee=financed*term.fee;const due=financed+fee;
+  const d=new Date(2026,5,28);d.setDate(d.getDate()+term.d);
+  const dd=d.toLocaleDateString(en?'en-US':'es-GT',{day:'2-digit',month:'short',year:'numeric'});
+  document.getElementById('confirmBody').innerHTML=`<div class="done">
+    <div class="check">✓</div>
+    <h3 style="font-size:1.3rem">${en?'Order approved!':'¡Pedido aprobado!'}</h3>
+    <p style="color:var(--muted);font-size:.92rem">${en?'Ships to the warehouse. The customer pays when the job pays.':'Se envía a bodega. El cliente paga cuando cobra la obra.'}</p>
+    <div class="receipt">
+      <div class="row"><span>${en?'Financed':'Financiado'}</span><b>${Q(financed)}</b></div>
+      <div class="row"><span>${en?'Term':'Plazo'}</span><b>Net-${term.d}</b></div>
+      <div class="row"><span>${en?'Fee':'Cargo'}</span><b>${fee>0?Q(fee):(en?'Free':'Sin costo')}</b></div>
+      <div class="row" style="border-top:1px solid var(--line);padding-top:8px;margin-top:4px"><span>${en?'Due':'Vence'} (${dd})</span><b>${Q(due)}</b></div>
+    </div>
+    <p style="font-size:.82rem;color:var(--muted)">${en?'OTP sent to the owner · line updated':'OTP enviado al dueño · línea actualizada'}</p>
+    <button class="btn ghost" style="margin-top:14px" onclick="go('repay')">${en?'See repayment →':'Ver pagos →'}</button>
+    <button class="btn" style="margin-top:9px" onclick="resetDemo()">${en?'New order':'Nuevo pedido'}</button>
+  </div>`;}
 
-  function approve(){
-    const t=L();const el=document.getElementById('uwState');
-    const fee=lastTotal*selectedTerm.fee;const due=lastTotal+fee;
-    const d=new Date(2026,5,28);d.setDate(d.getDate()+selectedTerm.term);
-    const dd=d.toLocaleDateString(document.body.classList.contains('en')?'en-US':'es-GT',{day:'2-digit',month:'short',year:'numeric'});
-    el.innerHTML=`<div class="done">
-      <div class="check">✓</div>
-      <h3>${t.done}</h3><p>${t.doneSub}</p>
-      <div class="receipt">
-        <div class="row"><span>${t.order}</span><b>${Q(lastTotal)}</b></div>
-        <div class="row"><span>${t.term}</span><b>Net-${selectedTerm.term}</b></div>
-        <div class="row"><span>${t.fee}</span><b>${fee>0?Q(fee):t.free}</b></div>
-        <div class="row" style="border-top:1px solid var(--line);padding-top:8px"><span>${t.due} (${dd})</span><b>${Q(due)}</b></div>
-      </div>
-      <button class="btn ghost" onclick="reset()">${t.newOrder}</button>
-    </div>`;
-  }
-  function reset(){CATALOG.forEach(i=>i.q=0);renderCatalog();recompute();
-    document.getElementById('uwState').innerHTML=`<div class="empty"><div class="big">🧮</div><p>${L()===T.en?'The limit is computed from the customer\\'s buying behavior — no bureau, no paperwork.':'El límite se calcula con el comportamiento de compra del cliente — sin buró, sin papeleo.'}</p></div>`;}
+function payToast(){const en=EN();document.getElementById('payMsg').textContent=en?'✓ On-time payment recorded — limit may increase':'✓ Pago a tiempo registrado — la línea puede subir';}
+function resetDemo(){CATALOG.forEach(i=>i.q=0);term={d:30,fee:0};renderCatalog();recompute();go('route');}
 
-  renderCatalog();recompute();
+/* ---------- guided tour ---------- */
+let tourOn=false,ti=0;
+const TOUR=[
+ {screen:'customer',pre:()=>{scenario='approved';document.getElementById('scenario').value='approved';applyScenario();},
+  es:{t:'1 · Conoce al cliente',b:'La ruta de Kevin abre en Ferretería La Bendición — Doña Marta, clienta Distun hace 6 años, compra ~Q45,000/mes. La línea de Q75,000 ya está calculada.',p:'La línea existe por la relación: se pre-calcula del historial, no se solicita.'},
+  en:{t:'1 · Meet the customer',b:"Kevin's route opens to Ferretería La Bendición — Doña Marta, a 6-year Distun customer buying ~Q45,000/mo. The Q75,000 line is already computed.",p:'The line exists because of the relationship — pre-computed from history, not applied for.'}},
+ {screen:'cart',pre:()=>{seedCart();},
+  es:{t:'2 · Un pedido real',b:'Kevin arma el pedido para una obra municipal: 200 sacos de cemento, 30 qq de varilla, 12 cientos de block → Q60,000.',p:'Vive en el punto de pedido, dentro de la venta del vendedor — no en una app de finanzas aparte.'},
+  en:{t:'2 · A real order',b:'Kevin builds the order for a municipal job: 200 bags of cement, 30 cwt of rebar, 12×100 block → Q60,000.',p:"It lives at the point of order, inside the rep's selling motion — not a separate finance app."}},
+ {screen:'pay',pre:()=>{document.getElementById('payTotal').textContent=Q(orderTotal());},
+  es:{t:'3 · Crédito como opción de pago',b:'Junto a "Contado", aparece Crédito Distun — Q75,000 disponible — como una opción de primera clase.',p:'Embedded finance: el crédito aparece justo donde se decide comprar.'},
+  en:{t:'3 · Credit as a payment option',b:'Next to "Pay now", Crédito Distun — Q75,000 available — appears as a first-class choice.',p:'Embedded finance: credit shows up exactly where the buy decision happens.'}},
+ {screen:'terms',pre:()=>{renderTerms();},
+  es:{t:'4 · Plazos en Quetzales claros',b:'Net-30 sin costo, net-60 y net-90 con cargo fijo — cada uno con su fecha de vencimiento y total a pagar.',p:'Modelo transparente, gratis financiado por el comercio. Sin interés escondido.'},
+  en:{t:'4 · Terms in plain Quetzales',b:'Net-30 free, net-60 and net-90 with a flat fee — each with its due date and total to repay.',p:'Transparent, merchant-funded-free model. No hidden interest.'}},
+ {screen:'decision',pre:()=>{scenario='approved';document.getElementById('scenario').value='approved';renderDecision();},
+  es:{t:'5 · El foso: la decisión y su PORQUÉ',b:'"Analizando historial Distun…" resuelve a Aprobado. El panel de señales se enciende: 6 años, Q45k/mes ↑12%, 71/73 a tiempo, 0 mora → Score 82.',p:'Este es el activo defensible: AG evalúa a thin-file que ningún banco toca, con 6 años de datos propios — explicable.'},
+  en:{t:'5 · The moat: the decision and its WHY',b:'"Analyzing Distun history…" resolves to Approved. The signal panel lights up: 6 years, Q45k/mo ↑12%, 71/73 on time, 0 delinquency → Score 82.',p:'This is the defensible asset: AG underwrites thin-file SMBs no bank touches, on 6 years of proprietary data — explainable.'}},
+ {screen:'decision',pre:()=>{scenario='partial';document.getElementById('scenario').value='partial';renderDecision();},
+  es:{t:'6 · Cuando no alcanza (la rama honesta)',b:'Si el pedido supera la línea, el sistema ofrece "Aprobado parcial" con una división limpia (crédito + contado) o pedir aumento.',p:'Degrada con gracia y nunca pierde la venta — producto real, no solo el camino feliz.'},
+  en:{t:'6 · When it doesn’t fit (the honest branch)',b:'If the order exceeds the line, the system offers "Partial approval" with a clean split (credit + cash) or a limit-increase path.',p:'It degrades gracefully and never loses the sale — real product thinking, not just the happy path.'}},
+ {screen:'confirm',pre:()=>{scenario='approved';document.getElementById('scenario').value='approved';term={d:30,fee:0};renderConfirm();},
+  es:{t:'7 · Cierra el ciclo y arranca el flywheel',b:'Doña Marta confirma por OTP; la línea se actualiza y queda el recordatorio de vencimiento. Pagar a tiempo sube su límite.',p:'Ciclo completo: originación, compromiso y repago — con una línea que crece.'},
+  en:{t:'7 · Close the loop, start the flywheel',b:'Doña Marta confirms by OTP; the line updates and a due-date reminder is set. Paying on time raises her limit.',p:'Full lifecycle: origination, commitment, repayment — with a line that grows.'}},
+ {screen:'portfolio',pre:()=>{},
+  es:{t:'8 · La vista de cartera (el "so what")',b:'Tasa de aprobación, utilización, mora por DPD y pérdida por zona — y cada aprobación trazable a sus señales.',p:'Hay un negocio de préstamo real con riesgo gobernable, no solo una función de checkout.'},
+  en:{t:'8 · The portfolio view (the "so what")',b:'Approval rate, utilization, DPD delinquency and loss by zone — and every approval traceable to its signals.',p:'A real lending business with governable risk, not just a checkout feature.'}},
+];
+function startTour(){tourOn=true;ti=0;document.getElementById('tour').classList.add('on');renderTour();}
+function endTour(){tourOn=false;document.getElementById('tour').classList.remove('on');}
+function tourStep(d){ti=Math.max(0,Math.min(TOUR.length-1,ti+d));renderTour();}
+function renderTour(){const en=EN();const s=TOUR[ti];if(s.pre)s.pre();go(s.screen);
+  const x=en?s.en:s.es;
+  document.getElementById('tStep').textContent=(en?'STEP ':'PASO ')+(ti+1)+' / '+TOUR.length;
+  document.getElementById('tTitle').textContent=x.t;document.getElementById('tBody').textContent=x.b;
+  document.getElementById('tProves').innerHTML='<b>'+(en?'Proves: ':'Demuestra: ')+'</b>'+x.p;
+  document.getElementById('tDots').innerHTML=TOUR.map((_,k)=>`<i class="${k===ti?'on':''}"></i>`).join('');
+  document.getElementById('tNext').innerHTML = ti===TOUR.length-1?(en?'Done':'Listo'):(en?'Next':'Siguiente');
+  if(ti===TOUR.length-1)document.getElementById('tNext').onclick=endTour;else document.getElementById('tNext').onclick=()=>tourStep(1);
+}
+
+/* ---------- init ---------- */
+renderCatalog();recompute();applyScenario();renderTerms();
 </script>
 </body>
 </html>
